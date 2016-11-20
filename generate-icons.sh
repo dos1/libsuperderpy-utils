@@ -21,7 +21,7 @@ FILE=$GAMENAME.$1
 SIZES="16 32 48 64 128 256 512 1024"
 ICOSIZES="16 32 48 64"
 PNGSIZES="128 256 512 1024" 
-MACSIZES="16 32 48 128 256 512 1024"
+MACSIZES="128 256 512 1024"
 ICOFILELIST=
 PNGFILELIST=
 MACFILELIST=
@@ -45,7 +45,7 @@ for SIZE in $SIZES
 do
   mkdir -p $SIZE
   echo "  $SIZE"
-  convert -density $SIZE -depth 24 -background none -interpolate $INTERPOLATION $FILE -interpolative-resize "$SIZE"x "$SIZE/${FILE%.*}.png"
+  convert -density $SIZE -background none -interpolate $INTERPOLATION $FILE -interpolative-resize "$SIZE"x png32:"$SIZE/${FILE%.*}.png"
 done
 
 for SIZE in $ICOSIZES
@@ -63,12 +63,12 @@ do
   MACFILELIST="$MACFILELIST $SIZE/${FILE%.*}.png"
 done
 
-echo "Optimizing...x"
+echo "Optimizing..."
 
 for F in */*.png
 do
   echo "  $F"
-  optipng $F &> /dev/null
+  optipng -nb $F &> /dev/null
 done
 
 if [[ ! -e "${FILE%.*}.png" ]]
@@ -79,7 +79,7 @@ fi
 echo "Creating ICO..."
 icotool --create $ICOFILELIST $PNGFILELIST > ${FILE%.*}.ico
 
-echo "Creating ICNS...  a $MACFILELIST"
+echo "Creating ICNS..."
 png2icns ${FILE%.*}.icns $MACFILELIST
 
 echo "Creating icon.rc..."

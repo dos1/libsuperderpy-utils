@@ -27,6 +27,7 @@ mv "$GAMENAME.app" "$GAMENAME_PRETTY.app"
 
 rm -rf "$GAMENAME_PRETTY.app/Contents/Resources/data"
 cp -r ../../data "$GAMENAME_PRETTY.app/Contents/Resources/"
+cp ../../data/icons/$GAMENAME.icns "$GAMENAME_PRETTY.app/Contents/Resources/"
 
 rm -rf "../output/$GAMENAME-osx.zip"
 zip -r -y "../output/$GAMENAME-osx.zip" "$GAMENAME_PRETTY.app"

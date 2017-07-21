@@ -25,7 +25,7 @@ GAMENAME=${GAMENAME#LIBSUPERDERPY_GAMENAME:INTERNAL=}
 GAMENAME_PRETTY=`grep LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL CMakeCache.txt`
 GAMENAME_PRETTY=${GAMENAME_PRETTY#LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL=}
 
-cp android/bin/$GAMENAME-debug.apk ../output/$GAMENAME-android.apk
+cp android/bin/$GAMENAME-debug.apk ../output/$GAMENAME-android-debug.apk
 
 cd ..
 rm -rf build-android

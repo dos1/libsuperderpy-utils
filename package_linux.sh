@@ -30,9 +30,13 @@ cp ../../src/$GAMENAME ../../src/*.so ../../src/gamestates/*.so ./
 cp -r ../../../../src ./
 cp -r ../../../../libsuperderpy ./
 rm -rf libsuperderpy/.git
-cp -r ../../../../cmake ./
+if [ -d "../../../../cmake" ]; then
+  cp -r ../../../../cmake ./
+fi
 cp -r ../../../../CMakeLists.txt ./
-cp -r ../../../../README ./
+if [ -f "../../../../README" ]; then
+  cp -r ../../../../README ./
+fi
 cp -r ../../../../COPYING ./
 cp -r ../../../../data ./
 

@@ -5,11 +5,7 @@ mkdir -p output
 
 rm -rf build-android
 
-pushd /home/dos/android
-
-. ./env
-
-popd
+. $LIBSUPERDERPY_ANDROID_ENV
 
 mkdir build-android
 

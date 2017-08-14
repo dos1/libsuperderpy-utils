@@ -3,11 +3,7 @@ set -e
 
 rm -rf env-android
 
-pushd /home/dos/android
-
-. ./env
-
-popd
+. $LIBSUPERDERPY_ANDROID_ENV
 
 mkdir env-android
 

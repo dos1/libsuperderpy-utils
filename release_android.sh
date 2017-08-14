@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-SDK_DIR=/home/dos/android/android-sdk-linux/build-tools/24.0.3
-
 if [ -z "$1" ]; then
   echo "Please provide the release number with the arguments."
   exit 1
@@ -12,11 +10,7 @@ mkdir -p output
 
 rm -rf build-android
 
-pushd /home/dos/android
-
-. ./env
-
-popd
+. $LIBSUPERDERPY_ANDROID_ENV
 
 mkdir build-android
 
@@ -40,9 +34,9 @@ rm -rf build-android
 
 cd output
 
-$SDK_DIR/zipalign -f -v 4 ../output/$GAMENAME-android-unsigned-unaligned.apk ../output/$GAMENAME-android-unsigned.apk
+$ANDROID_BUILD_TOOLS/zipalign -f -v 4 ../output/$GAMENAME-android-unsigned-unaligned.apk ../output/$GAMENAME-android-unsigned.apk
 
-$SDK_DIR/apksigner sign --ks /home/dos/android/android.keystore --out ../output/$GAMENAME-android.apk ../output/$GAMENAME-android-unsigned.apk
+$ANDROID_BUILD_TOOLS/apksigner sign --ks $ANDROID_KEYSTORE --out ../output/$GAMENAME-android.apk ../output/$GAMENAME-android-unsigned.apk
 
 rm ../output/$GAMENAME-android-unsigned-unaligned.apk
 rm ../output/$GAMENAME-android-unsigned.apk

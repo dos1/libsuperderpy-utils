@@ -9,9 +9,9 @@ mkdir build-win32
 
 cd build-win32
 
-cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/i686-w64-mingw32.toolchain -DCMAKE_BUILD_TYPE=RelWithDebInfo
+cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/i686-w64-mingw32.toolchain -DCMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja
 
-make -j4
+ninja
 
 GAMENAME=`grep LIBSUPERDERPY_GAMENAME:INTERNAL CMakeCache.txt`
 GAMENAME=${GAMENAME#LIBSUPERDERPY_GAMENAME:INTERNAL=}

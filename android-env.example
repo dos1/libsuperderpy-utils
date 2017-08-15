@@ -1,4 +1,7 @@
 #!/bin/bash
+#path to libsuperderpy directory (can be a submodule inside game repo)
+export LIBSUPERDERPY_DIR=$HOME/git/libsuperderpy
+
 #let Android find the JDK
 export JAVA_HOME=$HOME/android/jdk1.8.0_92
 

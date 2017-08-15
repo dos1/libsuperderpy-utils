@@ -9,15 +9,16 @@ Take android-env.example file and fill up everything except stuff like Allegro r
 Dependences that work for sure:
 flac-1.3.2      freetype-2.8         libogg-1.3.2         libtheora-1.1.1      libvorbis-1.3.5       physfs-2.0.3
 
-Freetype can be build without any issues with cmake, while PhysFS needs to be patched to disable CDROM support on Android.
+Freetype can be built without any issues with cmake, while PhysFS needs to be patched to disable CDROM support on Android.
   cmake -DCMAKE_TOOLCHAIN_FILE=$LIBSUPERDERPY_DIR/cmake/android.toolchain ..
   make install
 
-Others can be built using:
-  ./configure --prefix=$ANDROID_NDK_TOOLCHAIN_ROOT/sysroot/usr --host=arm-linux-androideabi
+Others are autotools based. For them, get newer config.sub and config.guess from https://git.savannah.gnu.org/gitweb/?p=config.git;a=tree
+Then you can use:
+  ./configure --prefix=$ANDROID_NDK_TOOLCHAIN_ROOT/sysroot/usr --host=arm-linux-androideabi --enable-static --disable-shared --disable-cpplibs --disable-examples --without-allegro CC="arm-linux-androideabi-clang"
   make install
 
-Opus has some issues with cross-compilation, while DUMB apparently doesn't support it (easily) at all.
+Tip: Install libogg first, so others can be compiled with autodetected OGG support.
 
 Back to Allegro:
   cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DANDROID_TARGET=android-23 -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-android.cmake -DARM_TARGETS="armeabi-v7a" -DWANT_EXAMPLES=no -DWANT_TESTS=no -DWANT_DEMO=no

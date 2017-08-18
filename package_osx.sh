@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-export PATH=~/git/osxcross/target/bin:$PATH
+PATH=$LIBSUPERDERPY_OSXCROSS_ROOT/bin:$PATH
 
 mkdir -p output
 
@@ -21,7 +21,7 @@ GAMENAME=${GAMENAME#LIBSUPERDERPY_GAMENAME:INTERNAL=}
 GAMENAME_PRETTY=`grep LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL CMakeCache.txt`
 GAMENAME_PRETTY=${GAMENAME_PRETTY#LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL=}
 
-PATH=~/git/osxcross/target/bin:$PATH ../fixup_bundle.rb "$GAMENAME.app"
+../fixup_bundle.rb "$GAMENAME.app"
 
 mv "$GAMENAME.app" "$GAMENAME_PRETTY.app"
 

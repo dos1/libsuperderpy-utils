@@ -113,11 +113,11 @@ class BundleFixer
     # resolve @loader_path references
     path = path.sub("@loader_path", context)
     # follow symlinks
-    lel = "/home/dos/git/osxcross/target/SDK/MacOSX10.11.sdk"
+    macports = ENV["LIBSUPERDERPY_OSXCROSS_ROOT"] + "/macports/pkgs"
     if path.start_with?("/home")
-      lel = ""
+      macports = ""
     end
-    File.realpath lel + path
+    File.realpath macports + path
   end
 
 end

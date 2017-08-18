@@ -1,6 +1,7 @@
 Using osxcross from https://github.com/tpoechtrager/osxcross
 
 Unpack Xcode SDK per instructions in osxcross' README.
+Xcode 7.3.1 is known to work.
 
 Build the osxcross toolchain with:
   CC=clang CXX=clang++ OSX_VERSION_MIN=10.7 ./build.sh

@@ -16,7 +16,7 @@ mkdir build-android
 
 cd build-android
 
-cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/android.toolchain -DCMAKE_BUILD_TYPE=Release -DLIBSUPERDERPY_ANDROID_DEBUGGABLE=false -DLIBSUPERDERPY_RELEASE=$1 -G Ninja
+cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/android.toolchain -DCMAKE_BUILD_TYPE=Release -DLIBSUPERDERPY_ANDROID_DEBUGGABLE=false -DLIBSUPERDERPY_RELEASE=$1 -DANDROID_TARGET=$LIBSUPERDERPY_ANDROID_TARGET -G Ninja
 
 ninja
 

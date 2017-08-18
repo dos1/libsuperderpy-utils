@@ -36,3 +36,6 @@ export ANDROID_BUILD_TOOLS=$ANDROID_HOME/build-tools/26.0.1
 
 #set path to keystore file with release signing key
 export ANDROID_KEYSTORE=$HOME/android/android.keystore
+
+#set SDK API level to build libsuperderpy with (minimum android-19)
+export LIBSUPERDERPY_ANDROID_TARGET=android-23

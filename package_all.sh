@@ -6,3 +6,4 @@ set -e
 ./package_win64.sh
 ./package_osx.sh
 ./package_android.sh
+./package_html5.sh

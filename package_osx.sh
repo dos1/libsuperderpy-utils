@@ -25,8 +25,6 @@ GAMENAME_PRETTY=${GAMENAME_PRETTY#LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL=}
 
 mv "$GAMENAME.app" "$GAMENAME_PRETTY.app"
 
-rm -rf "$GAMENAME_PRETTY.app/Contents/Resources/data"
-cp -r ../../data "$GAMENAME_PRETTY.app/Contents/Resources/"
 cp ../../data/icons/$GAMENAME.icns "$GAMENAME_PRETTY.app/Contents/Resources/"
 
 rm -rf "../output/$GAMENAME-osx.zip"

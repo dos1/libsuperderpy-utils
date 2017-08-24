@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+# TODO: use install target
+
 mkdir -p output
 
 rm -rf build-linux

@@ -5,10 +5,7 @@ mkdir -p output
 
 rm -rf build-html5
 
-pushd .
-cd /usr/lib/emsdk
-source ./emsdk_env.sh
-popd
+. /usr/lib/emsdk/emsdk_env.sh /usr/lib/emsdk
 
 mkdir build-html5
 

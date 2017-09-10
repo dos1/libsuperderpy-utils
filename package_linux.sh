@@ -11,7 +11,7 @@ mkdir build-linux
 
 cd build-linux
 
-cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja
+cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo  -DUSE_CLANG_TIDY=no -G Ninja
 
 ninja
 

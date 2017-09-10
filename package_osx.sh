@@ -11,7 +11,7 @@ mkdir build-osx
 
 cd build-osx
 
-cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/osxcross64.toolchain -DCMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja
+cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/osxcross64.toolchain -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUSE_CLANG_TIDY=no -G Ninja
 
 ninja install
 

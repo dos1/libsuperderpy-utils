@@ -11,9 +11,9 @@ mkdir build-android
 
 cd build-android
 
-cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/android.toolchain -DCMAKE_BUILD_TYPE=RelWithDebInfo -DANDROID_TARGET=$LIBSUPERDERPY_ANDROID_TARGET -DUSE_CLANG_TIDY=no -G Ninja
+cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/android.toolchain -DCMAKE_BUILD_TYPE=RelWithDebInfo -DANDROID_TARGET=$LIBSUPERDERPY_ANDROID_TARGET -DUSE_CLANG_TIDY=no
 
-ninja
+make -j4
 
 GAMENAME=`grep LIBSUPERDERPY_GAMENAME:INTERNAL CMakeCache.txt`
 GAMENAME=${GAMENAME#LIBSUPERDERPY_GAMENAME:INTERNAL=}

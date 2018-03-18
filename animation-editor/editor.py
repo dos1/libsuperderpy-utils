@@ -1,0 +1,203 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+import sys
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from os import listdir
+from os.path import isfile, join
+from EditorUI import Ui_MainWindow
+
+app = QApplication(sys.argv)
+
+order=Qt.DescendingOrder
+
+def sort():
+    global order, model
+    if order==Qt.DescendingOrder:
+        order=Qt.AscendingOrder
+    else:
+        order=Qt.DescendingOrder
+    model.sort(0, order=order)
+
+def addFrame():
+    index = ui.sourcesList.currentIndex()
+    if index.model():
+        item = index.model().itemFromIndex(index)
+        newItem = QStandardItem(item)
+        if ui.frameList.currentIndex().model():
+            frameModel.insertRow(ui.frameList.currentIndex().row() + 1, newItem)
+        else:
+            frameModel.appendRow(newItem)
+        ui.frameList.setCurrentIndex(newItem.index())
+
+def moveFrameLeft():
+    frame = ui.frameList.currentIndex()
+    if not frame.model():
+        return
+    newRow = frame.row() - 1
+    if newRow < 0:
+        return
+    rows = frameModel.takeRow(frame.row())
+    frameModel.insertRow(newRow, rows)
+    ui.frameList.setCurrentIndex(rows[0].index())
+
+def moveFrameRight():
+    frame = ui.frameList.currentIndex()
+    if not frame.model():
+        return
+    newRow = frame.row() + 1
+    if newRow >= frameModel.rowCount():
+        return
+    rows = frameModel.takeRow(frame.row())
+    frameModel.insertRow(newRow, rows)
+    ui.frameList.setCurrentIndex(rows[0].index())
+    
+def duplicateFrame():
+    index = ui.frameList.currentIndex()
+    if index.model():
+        item = index.model().itemFromIndex(index)
+        newItem = QStandardItem(item)
+        frameModel.insertRow(index.row() + 1, newItem)
+        ui.frameList.setCurrentIndex(newItem.index())
+    
+def deleteFrame():
+    frame = ui.frameList.currentIndex()
+    if not frame.model():
+        return
+    frameModel.removeRow(frame.row())
+    ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
+    
+playing = False
+reversing = False
+timer = QTimer()
+    
+def nextFrame():
+    global reversing
+    if playing and reversing:
+        return prevFrame()
+    frame = ui.frameList.currentIndex()
+    item = frameModel.item(frame.row() + 1)
+    if not item:
+        if ui.reversible.isChecked():
+            reversing = True
+            return prevFrame()
+        item = frameModel.item(0)
+        if not item:
+            return
+    ui.frameList.setCurrentIndex(item.index())        
+    
+def prevFrame():
+    global reversing
+    count = frameModel.rowCount()
+    if count == 0:
+        return
+    frame = ui.frameList.currentIndex()
+    if not frame.model():
+        row = -1
+    else:
+        row = frame.row() - 1
+    if row < 0:
+        if playing and reversing:
+            reversing = False
+            return nextFrame()
+        row = count - 1
+        
+    item = frameModel.item(row)
+    if not item:
+        return
+    ui.frameList.setCurrentIndex(item.index())        
+    
+def playPause():
+    global playing
+    playing = not playing
+    ui.sourcesGroup.setEnabled(not playing)
+    ui.frameGroup2.setEnabled(not playing)
+    ui.playPause.setIcon(QIcon.fromTheme("media-playback-pause" if playing else "media-playback-start"))
+    
+    timer.setInterval(ui.duration.value())
+    if playing:
+        timer.start()
+    else:
+        timer.stop()
+        
+def showFrame(current, previous):
+    if not current.model():
+        preview.setVisible(False)
+        return
+    preview.setVisible(True)
+    pixmap = current.model().itemFromIndex(current).data()
+    preview.setPixmap(pixmap)
+    previewScene.setSceneRect(QRectF(pixmap.rect()))
+    ui.preview.fitInView(previewScene.sceneRect(), mode=Qt.KeepAspectRatio)
+        
+def stop():
+    global playing
+    playing = True
+    playPause()
+    item = frameModel.item(0)
+    if item:
+        ui.frameList.setCurrentIndex(item.index())
+
+timer.timeout.connect(nextFrame)
+
+window = QMainWindow()
+ui = Ui_MainWindow()
+ui.setupUi(window)
+
+previewScene = QGraphicsScene(window)
+ui.preview.setScene(previewScene)
+preview = previewScene.addPixmap(QPixmap())
+    
+
+model = QStandardItemModel(ui.sourcesList)
+
+frames = [f for f in listdir("grzybokwiatek") if isfile(join("grzybokwiatek", f))]
+
+for frame in frames:
+    item = QStandardItem(frame)
+    pixmap = QPixmap("grzybokwiatek/"+frame)
+    item.setIcon(QIcon(pixmap))
+    item.setToolTip(frame)
+    item.setData(pixmap)
+    item.setDropEnabled(False)
+ 
+    model.appendRow(item)
+ 
+sort()
+
+def unreverse():
+    global reversing
+    reversing = False
+
+ui.sort.pressed.connect(sort)
+ui.addFrame.pressed.connect(addFrame)
+ui.moveLeft.pressed.connect(moveFrameLeft)
+ui.moveRight.pressed.connect(moveFrameRight)
+ui.copy.pressed.connect(duplicateFrame)
+ui.deleteBtn.pressed.connect(deleteFrame)
+ui.playPause.pressed.connect(playPause)
+ui.stop.pressed.connect(stop)
+ui.goLeft.pressed.connect(prevFrame)
+ui.goRight.pressed.connect(nextFrame)
+ui.reversible.stateChanged.connect(unreverse)
+ui.duration.valueChanged.connect(lambda val: timer.setInterval(val))
+ 
+frameModel = QStandardItemModel(ui.frameList)
+frameModel.itemChanged.connect(lambda item: QTimer.singleShot(0, lambda: ui.frameList.setCurrentIndex(item.index())))
+ 
+ui.frameList.setDragDropMode(QAbstractItemView.InternalMove)
+ui.sourcesList.setDragDropMode(QAbstractItemView.DragOnly)
+ui.sourcesList.setModel(model)
+ui.frameList.setModel(frameModel)
+
+ui.sourcesList.dragStarted.connect(lambda: ui.frameList.setDragDropMode(QAbstractItemView.DragDrop))
+ui.frameList.dragStarted.connect(lambda: ui.frameList.setDragDropMode(QAbstractItemView.InternalMove))
+
+ui.frameList.selectionModel().currentChanged.connect(lambda current, previous: ui.counter.setText((str(current.row() + 1) + '/' + str(current.model().rowCount())) if current.model() else '-/-'))
+
+ui.frameList.selectionModel().currentChanged.connect(showFrame)
+
+window.show()
+app.exec_()

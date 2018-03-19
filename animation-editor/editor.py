@@ -116,6 +116,7 @@ def playPause():
     ui.sourcesGroup.setEnabled(not playing)
     ui.frameGroup2.setEnabled(not playing)
     ui.playPause.setIcon(QIcon.fromTheme("media-playback-pause" if playing else "media-playback-start"))
+    ui.playPause.setText("Pause" if playing else "Play")
     
     timer.setInterval(ui.duration.value())
     if playing:

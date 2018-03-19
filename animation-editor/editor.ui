@@ -113,7 +113,7 @@
             <item>
              <widget class="QToolButton" name="copy">
               <property name="text">
-               <string/>
+               <string>Copy</string>
               </property>
               <property name="icon">
                <iconset theme="edit-copy">
@@ -124,7 +124,7 @@
             <item>
              <widget class="QToolButton" name="moveLeft">
               <property name="text">
-               <string/>
+               <string>Left</string>
               </property>
               <property name="icon">
                <iconset theme="arrow-left">
@@ -138,7 +138,7 @@
             <item>
              <widget class="QToolButton" name="moveRight">
               <property name="text">
-               <string/>
+               <string>Right</string>
               </property>
               <property name="icon">
                <iconset theme="arrow-right">
@@ -152,7 +152,7 @@
             <item>
              <widget class="QToolButton" name="deleteBtn">
               <property name="text">
-               <string/>
+               <string>Delete</string>
               </property>
               <property name="icon">
                <iconset theme="delete">
@@ -408,7 +408,7 @@
        <item>
         <widget class="QToolButton" name="sort">
          <property name="text">
-          <string/>
+          <string>Sort</string>
          </property>
          <property name="icon">
           <iconset theme="reverse"/>

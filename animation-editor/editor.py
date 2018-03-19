@@ -7,6 +7,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from os import listdir
 from os.path import isfile, join
+from configparser import ConfigParser
 from EditorUI import Ui_MainWindow
 
 app = QApplication(sys.argv)
@@ -80,7 +81,7 @@ def nextFrame():
     frame = ui.frameList.currentIndex()
     item = frameModel.item(frame.row() + 1)
     if not item:
-        if ui.reversible.isChecked():
+        if playing and ui.reversible.isChecked():
             reversing = True
             return prevFrame()
         item = frameModel.item(0)
@@ -146,27 +147,105 @@ window = QMainWindow()
 ui = Ui_MainWindow()
 ui.setupUi(window)
 
+animDir = None
+animFile = None
+
+def readDir():
+    model.clear()
+    frames = [f for f in listdir(animDir) if (isfile(join(animDir, f)) and f.lower().endswith(('.png', '.webp', '.jpg', '.bmp')))]
+
+    for frame in frames:
+        item = QStandardItem(frame)
+        pixmap = QPixmap(join(animDir, frame))
+        item.setIcon(QIcon(pixmap))
+        item.setToolTip(frame)
+        item.setData(pixmap)
+        item.setDropEnabled(False)
+    
+        model.appendRow(item)
+    
+    sort()
+
+def openFile():
+    global animFile, animDir
+    animFile = QFileDialog.getOpenFileName(window, "Select an animation to open...", QDir.currentPath(), "libsuperderpy animation (*.ini)")
+    animFile = animFile[0]
+    d = QDir(animFile)
+    d.cdUp()
+    animDir = d.path()
+
+    config = ConfigParser()
+    config.read(animFile)
+    ui.reversible.setChecked(config.getboolean('animation', 'reversible', fallback=False))
+    ui.duration.setValue(config.getint('animation', 'duration', fallback=100))
+    frames = config.getint('animation', 'frames')
+    for i in range(frames):
+        section = 'frame' + str(i)
+        frame = config.get(section, 'file')
+        item = QStandardItem(frame)
+        pixmap = QPixmap(join(animDir, frame))
+        item.setIcon(QIcon(pixmap))
+        item.setToolTip(frame)
+        item.setData(pixmap)
+        item.setDropEnabled(False)
+        frameModel.appendRow(item)
+    readDir()
+
+        
+def newFile():
+    global animDir, animFile
+    animDir = QFileDialog.getExistingDirectory(window, "Select a directory with animation frames.", QDir.currentPath())
+    
+    readDir()
+    
+    frameModel.clear()
+    
+    animFile = None
+    ui.counter.setText('-/-')
+
+
+def newOrOpen():
+    val = QMessageBox.question(window, "libsuperderpy animation editor", "Do you want to open an existing animation?")
+    if val == QMessageBox.Yes:
+        openFile()
+    else:
+        newFile()
+        
+def saveFileAs():
+    global animFile
+    f = QFileDialog.getSaveFileName(window, "Save animation", animDir, "libsuperderpy animation (*.ini)")
+    f = f[0]
+    if not f:
+        animFile = f
+        saveFile()
+    
+def saveFile():
+    if not animFile:
+        return saveFileAs()
+    config = ConfigParser()
+    #config.read(animFile)
+    config.add_section('animation')
+    config.set('animation', 'duration', str(ui.duration.value()))
+    if ui.reversible.isChecked():
+        config.set('animation', 'reversible', 'true')
+    config.set('animation', 'spritesheet', 'false')
+    config.set('animation', 'frames', str(frameModel.rowCount()))
+    for i in range(frameModel.rowCount()):
+        section = 'frame' + str(i)
+        config.add_section(section)
+        config.set(section, 'file', frameModel.item(i).text())
+
+    with open(animFile, 'w') as configfile:
+        config.write(configfile)
+    
+model = QStandardItemModel(ui.sourcesList)
+frameModel = QStandardItemModel(ui.frameList)
+newOrOpen()
+
 previewScene = QGraphicsScene(window)
 ui.preview.setScene(previewScene)
 preview = previewScene.addPixmap(QPixmap())
     
-
-model = QStandardItemModel(ui.sourcesList)
-
-frames = [f for f in listdir("grzybokwiatek") if isfile(join("grzybokwiatek", f))]
-
-for frame in frames:
-    item = QStandardItem(frame)
-    pixmap = QPixmap("grzybokwiatek/"+frame)
-    item.setIcon(QIcon(pixmap))
-    item.setToolTip(frame)
-    item.setData(pixmap)
-    item.setDropEnabled(False)
- 
-    model.appendRow(item)
- 
-sort()
-
 def unreverse():
     global reversing
     reversing = False
@@ -183,8 +262,15 @@ ui.goLeft.pressed.connect(prevFrame)
 ui.goRight.pressed.connect(nextFrame)
 ui.reversible.stateChanged.connect(unreverse)
 ui.duration.valueChanged.connect(lambda val: timer.setInterval(val))
+ui.actionNew.triggered.connect(newFile)
+ui.actionOpen.triggered.connect(openFile)
+ui.actionSave.triggered.connect(saveFile)
+ui.actionSave_as.triggered.connect(saveFileAs)
+ui.actionClose.triggered.connect(lambda: app.quit())
  
-frameModel = QStandardItemModel(ui.frameList)
+ui.sourcesList.itemSelected.connect(addFrame)
+ui.frameList.itemRemoved.connect(deleteFrame)
+
 frameModel.itemChanged.connect(lambda item: QTimer.singleShot(0, lambda: ui.frameList.setCurrentIndex(item.index())))
  
 ui.frameList.setDragDropMode(QAbstractItemView.InternalMove)
@@ -198,6 +284,7 @@ ui.frameList.dragStarted.connect(lambda: ui.frameList.setDragDropMode(QAbstractI
 ui.frameList.selectionModel().currentChanged.connect(lambda current, previous: ui.counter.setText((str(current.row() + 1) + '/' + str(current.model().rowCount())) if current.model() else '-/-'))
 
 ui.frameList.selectionModel().currentChanged.connect(showFrame)
+
 
 window.show()
 app.exec_()

@@ -9,6 +9,8 @@ class FrameDelegate(QStyledItemDelegate):
 class FrameListView(QListView):
     
     dragStarted = pyqtSignal()
+    itemSelected = pyqtSignal()
+    itemRemoved = pyqtSignal()
     
     def __init__(self, *args, **kwargs):
         super(FrameListView, self).__init__(*args, **kwargs)
@@ -34,7 +36,10 @@ class FrameListView(QListView):
         super(FrameListView, self).startDrag(*args, **kwargs)
         
     def resizeEvent(self, event):
-        self.setIconSize(QSize(event.size().height() - 16, event.size().height() - 16))
+        size = event.size().height() - 16
+        if size > 192:
+            size = 192
+        self.setIconSize(QSize(size, size))
         super(FrameListView, self).resizeEvent(event)
 
     def viewOptions(self):
@@ -43,3 +48,10 @@ class FrameListView(QListView):
         ret.displayAlignment = Qt.AlignCenter
         ret.decorationAlignment = Qt.AlignCenter
         return ret
+    
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Space:
+            self.itemSelected.emit()
+        if event.key() == Qt.Key_Delete:
+            self.itemRemoved.emit()
+        return super(FrameListView, self).keyPressEvent(event)

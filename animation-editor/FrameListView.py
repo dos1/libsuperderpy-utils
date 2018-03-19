@@ -52,6 +52,6 @@ class FrameListView(QListView):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Space:
             self.itemSelected.emit()
-        if event.key() == Qt.Key_Delete:
+        if event.key() == Qt.Key_Delete or event.key() == Qt.Key_Backspace:
             self.itemRemoved.emit()
         return super(FrameListView, self).keyPressEvent(event)

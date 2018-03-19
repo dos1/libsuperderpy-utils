@@ -11,6 +11,7 @@ from configparser import ConfigParser
 from EditorUI import Ui_MainWindow
 
 app = QApplication(sys.argv)
+app.setApplicationDisplayName("libsuperderpy animation editor")
 
 order=Qt.DescendingOrder
 
@@ -32,6 +33,16 @@ def addFrame():
         else:
             frameModel.appendRow(newItem)
         ui.frameList.setCurrentIndex(newItem.index())
+        
+        window.setWindowModified(True)
+        
+def addAll():
+    count = model.rowCount()
+    for i in range(count):
+        item = model.item(i)
+        frameModel.appendRow(QStandardItem(item))
+    if count > 0:
+        window.setWindowModified(True)
 
 def moveFrameLeft():
     frame = ui.frameList.currentIndex()
@@ -43,6 +54,7 @@ def moveFrameLeft():
     rows = frameModel.takeRow(frame.row())
     frameModel.insertRow(newRow, rows)
     ui.frameList.setCurrentIndex(rows[0].index())
+    window.setWindowModified(True)
 
 def moveFrameRight():
     frame = ui.frameList.currentIndex()
@@ -54,6 +66,7 @@ def moveFrameRight():
     rows = frameModel.takeRow(frame.row())
     frameModel.insertRow(newRow, rows)
     ui.frameList.setCurrentIndex(rows[0].index())
+    window.setWindowModified(True)
     
 def duplicateFrame():
     index = ui.frameList.currentIndex()
@@ -62,6 +75,7 @@ def duplicateFrame():
         newItem = QStandardItem(item)
         frameModel.insertRow(index.row() + 1, newItem)
         ui.frameList.setCurrentIndex(newItem.index())
+        window.setWindowModified(True)
     
 def deleteFrame():
     frame = ui.frameList.currentIndex()
@@ -69,6 +83,7 @@ def deleteFrame():
         return
     frameModel.removeRow(frame.row())
     ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
+    window.setWindowModified(True)
     
 playing = False
 reversing = False
@@ -141,12 +156,16 @@ def stop():
     item = frameModel.item(0)
     if item:
         ui.frameList.setCurrentIndex(item.index())
+        
+def modify():
+    window.setWindowModified(True)
 
 timer.timeout.connect(nextFrame)
 
 window = QMainWindow()
 ui = Ui_MainWindow()
 ui.setupUi(window)
+window.setWindowTitle("")
 
 animDir = None
 animFile = None
@@ -171,6 +190,8 @@ def openFile():
     global animFile, animDir
     animFile = QFileDialog.getOpenFileName(window, "Select an animation to open...", QDir.currentPath(), "libsuperderpy animation (*.ini)")
     animFile = animFile[0]
+    if animFile=="":
+        return
     d = QDir(animFile)
     d.cdUp()
     animDir = d.path()
@@ -191,18 +212,25 @@ def openFile():
         item.setDropEnabled(False)
         frameModel.appendRow(item)
     readDir()
-
+    window.setWindowFilePath(animFile)
+    window.setWindowModified(False)
         
 def newFile():
     global animDir, animFile
     animDir = QFileDialog.getExistingDirectory(window, "Select a directory with animation frames.", QDir.currentPath())
     
+    if animDir=="":
+        return
+    
     readDir()
     
     frameModel.clear()
     
+    window.setWindowFilePath("")
+    
     animFile = None
     ui.counter.setText('-/-')
+    window.setWindowModified(False)
 
 
 def newOrOpen():
@@ -216,7 +244,7 @@ def saveFileAs():
     global animFile
     f = QFileDialog.getSaveFileName(window, "Save animation", animDir, "libsuperderpy animation (*.ini)")
     f = f[0]
-    if not f:
+    if f!="":
         animFile = f
         saveFile()
     
@@ -238,6 +266,8 @@ def saveFile():
 
     with open(animFile, 'w') as configfile:
         config.write(configfile)
+    window.setWindowModified(False)
+    window.setWindowFilePath(animFile)
     
 model = QStandardItemModel(ui.sourcesList)
 frameModel = QStandardItemModel(ui.frameList)
@@ -253,6 +283,7 @@ def unreverse():
 
 ui.sort.pressed.connect(sort)
 ui.addFrame.pressed.connect(addFrame)
+ui.addAll.pressed.connect(addAll)
 ui.moveLeft.pressed.connect(moveFrameLeft)
 ui.moveRight.pressed.connect(moveFrameRight)
 ui.copy.pressed.connect(duplicateFrame)
@@ -262,7 +293,9 @@ ui.stop.pressed.connect(stop)
 ui.goLeft.pressed.connect(prevFrame)
 ui.goRight.pressed.connect(nextFrame)
 ui.reversible.stateChanged.connect(unreverse)
+ui.reversible.stateChanged.connect(modify)
 ui.duration.valueChanged.connect(lambda val: timer.setInterval(val))
+ui.duration.valueChanged.connect(modify)
 ui.actionNew.triggered.connect(newFile)
 ui.actionOpen.triggered.connect(openFile)
 ui.actionSave.triggered.connect(saveFile)
@@ -272,7 +305,8 @@ ui.actionClose.triggered.connect(lambda: app.quit())
 ui.sourcesList.itemSelected.connect(addFrame)
 ui.frameList.itemRemoved.connect(deleteFrame)
 
-frameModel.itemChanged.connect(lambda item: QTimer.singleShot(0, lambda: ui.frameList.setCurrentIndex(item.index())))
+frameModel.itemChanged.connect(lambda item: QTimer.singleShot(50, lambda: ui.frameList.setCurrentIndex(item.index())))
+frameModel.itemChanged.connect(modify)
  
 ui.frameList.setDragDropMode(QAbstractItemView.InternalMove)
 ui.sourcesList.setDragDropMode(QAbstractItemView.DragOnly)
@@ -285,7 +319,6 @@ ui.frameList.dragStarted.connect(lambda: ui.frameList.setDragDropMode(QAbstractI
 ui.frameList.selectionModel().currentChanged.connect(lambda current, previous: ui.counter.setText((str(current.row() + 1) + '/' + str(current.model().rowCount())) if current.model() else '-/-'))
 
 ui.frameList.selectionModel().currentChanged.connect(showFrame)
-
 
 window.show()
 app.exec_()

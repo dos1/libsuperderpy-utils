@@ -406,6 +406,16 @@
         </spacer>
        </item>
        <item>
+        <widget class="QToolButton" name="addAll">
+         <property name="text">
+          <string>Add all</string>
+         </property>
+         <property name="icon">
+          <iconset theme="folder-add"/>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QToolButton" name="sort">
          <property name="text">
           <string>Sort</string>

@@ -198,7 +198,7 @@ def openFile():
 
     config = ConfigParser()
     config.read(animFile)
-    ui.reversible.setChecked(config.getboolean('animation', 'reversible', fallback=False))
+    ui.reversible.setChecked(config.getboolean('animation', 'bidir', fallback=False))
     ui.duration.setValue(config.getint('animation', 'duration', fallback=100))
     frames = config.getint('animation', 'frames')
     for i in range(frames):
@@ -256,8 +256,7 @@ def saveFile():
     config.add_section('animation')
     config.set('animation', 'duration', str(ui.duration.value()))
     if ui.reversible.isChecked():
-        config.set('animation', 'reversible', 'true')
-    config.set('animation', 'spritesheet', 'false')
+        config.set('animation', 'bidir', '1')
     config.set('animation', 'frames', str(frameModel.rowCount()))
     for i in range(frameModel.rowCount()):
         section = 'frame' + str(i)

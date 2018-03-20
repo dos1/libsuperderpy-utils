@@ -214,6 +214,8 @@ def openFile(filename = None):
     d.cdUp()
     animDir = d.path()
 
+    frameModel.clear()
+
     config = ConfigParser()
     config.read(animFile)
     ui.reversible.setChecked(config.getboolean('animation', 'bidir', fallback=False))

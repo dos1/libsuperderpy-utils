@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
@@ -162,7 +162,21 @@ def modify():
 
 timer.timeout.connect(nextFrame)
 
-window = QMainWindow()
+class MainWindow(QMainWindow):
+    def closeEvent(self, event):
+        if self.isWindowModified():
+            val = QMessageBox.warning(self, animFile, "The animation has been changed. Do you want to save it?", QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if val == QMessageBox.Yes:
+                saveFile()
+                event.accept()
+            elif val == QMessageBox.No:
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.accept()
+
+window = MainWindow()
 ui = Ui_MainWindow()
 ui.setupUi(window)
 window.setWindowTitle("")

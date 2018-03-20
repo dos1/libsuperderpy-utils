@@ -200,10 +200,14 @@ def readDir():
     
     sort()
 
-def openFile():
+def openFile(filename = None):
     global animFile, animDir
-    animFile = QFileDialog.getOpenFileName(window, "Select an animation to open...", QDir.currentPath(), "libsuperderpy animation (*.ini)")
-    animFile = animFile[0]
+    if not filename:
+        animFile = QFileDialog.getOpenFileName(window, "Select an animation to open...", QDir.currentPath(), "libsuperderpy animation (*.ini)")
+        animFile = animFile[0]
+    else:
+        animFile = filename
+
     if animFile=="":
         return
     d = QDir(animFile)
@@ -284,7 +288,10 @@ def saveFile():
     
 model = QStandardItemModel(ui.sourcesList)
 frameModel = QStandardItemModel(ui.frameList)
-newOrOpen()
+if len(sys.argv) > 1:
+    openFile(sys.argv[1])
+else:
+    newOrOpen()
 
 previewScene = QGraphicsScene(window)
 ui.preview.setScene(previewScene)

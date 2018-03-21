@@ -150,6 +150,16 @@
              </widget>
             </item>
             <item>
+             <widget class="QToolButton" name="importBtn">
+              <property name="text">
+               <string>Import</string>
+              </property>
+              <property name="icon">
+               <iconset theme="document-import"/>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QToolButton" name="deleteBtn">
               <property name="text">
                <string>Delete</string>
@@ -411,7 +421,8 @@
           <string>Add all</string>
          </property>
          <property name="icon">
-          <iconset theme="folder-add"/>
+          <iconset theme="folder-add">
+           <normaloff>.</normaloff>.</iconset>
          </property>
         </widget>
        </item>
@@ -421,7 +432,8 @@
           <string>Sort</string>
          </property>
          <property name="icon">
-          <iconset theme="reverse"/>
+          <iconset theme="reverse">
+           <normaloff>.</normaloff>.</iconset>
          </property>
         </widget>
        </item>
@@ -432,7 +444,8 @@
   </widget>
   <action name="actionNew">
    <property name="icon">
-    <iconset theme="document-new"/>
+    <iconset theme="document-new">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;New</string>
@@ -443,7 +456,8 @@
   </action>
   <action name="actionOpen">
    <property name="icon">
-    <iconset theme="document-open"/>
+    <iconset theme="document-open">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Open</string>
@@ -454,7 +468,8 @@
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset theme="document-save"/>
+    <iconset theme="document-save">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Save</string>
@@ -465,7 +480,8 @@
   </action>
   <action name="actionSave_as">
    <property name="icon">
-    <iconset theme="document-save-as"/>
+    <iconset theme="document-save-as">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Save &amp;as...</string>
@@ -473,7 +489,8 @@
   </action>
   <action name="actionClose">
    <property name="icon">
-    <iconset theme="window-close"/>
+    <iconset theme="window-close">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Close</string>

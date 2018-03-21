@@ -203,7 +203,7 @@ def readDir():
 def openFile(filename = None):
     global animFile, animDir
     if not filename:
-        animFile = QFileDialog.getOpenFileName(window, "Select an animation to open...", QDir.currentPath(), "libsuperderpy animation (*.ini)")
+        animFile = QFileDialog.getOpenFileName(window, "Select an animation to open...", animDir if animDir else QDir.currentPath(), "libsuperderpy animation (*.ini)")
         animFile = animFile[0]
     else:
         animFile = filename
@@ -234,6 +234,30 @@ def openFile(filename = None):
     readDir()
     window.setWindowFilePath(animFile)
     window.setWindowModified(False)
+
+
+def importFrames():
+    filename = QFileDialog.getOpenFileName(window, "Select an animation to import...", animDir, "libsuperderpy animation (*.ini)")
+    filename = filename[0]
+
+    if filename=="":
+        return
+
+    config = ConfigParser()
+    config.read(filename)
+    frames = config.getint('animation', 'frames')
+    for i in range(frames):
+        section = 'frame' + str(i)
+        frame = config.get(section, 'file')
+        item = QStandardItem(frame)
+        pixmap = QPixmap(join(animDir, frame))
+        item.setIcon(QIcon(pixmap))
+        item.setToolTip(frame)
+        item.setData(pixmap)
+        item.setDropEnabled(False)
+        frameModel.appendRow(item)
+    window.setWindowModified(True)
+    ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
         
 def newFile():
     global animDir, animFile
@@ -308,6 +332,7 @@ ui.addFrame.pressed.connect(addFrame)
 ui.addAll.pressed.connect(addAll)
 ui.moveLeft.pressed.connect(moveFrameLeft)
 ui.moveRight.pressed.connect(moveFrameRight)
+ui.importBtn.pressed.connect(importFrames)
 ui.copy.pressed.connect(duplicateFrame)
 ui.deleteBtn.pressed.connect(deleteFrame)
 ui.playPause.pressed.connect(playPause)

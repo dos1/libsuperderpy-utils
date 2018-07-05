@@ -41,6 +41,8 @@ if [ -f "../../../../README" ]; then
 fi
 cp -r ../../../../COPYING ./
 cp -r ../../../../data ./
+rm -rf data/.git
+rm -rf data/stuff
 
 strip $GAMENAME *.so
 

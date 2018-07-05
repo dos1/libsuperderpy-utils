@@ -33,6 +33,8 @@ cp -r ../../../../data ./
 cp -r ../../../../COPYING ./
 rm -rf data/icons/*
 cp ../../../../data/icons/$GAMENAME.png ./data/icons/
+rm -rf data/.git
+rm -rf data/stuff
 rm data/CMakeLists.txt
 rm data/$GAMENAME.desktop
 

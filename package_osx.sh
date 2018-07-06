@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 PATH=$LIBSUPERDERPY_OSXCROSS_ROOT/bin:$PATH
@@ -6,6 +6,8 @@ PATH=$LIBSUPERDERPY_OSXCROSS_ROOT/bin:$PATH
 mkdir -p output
 
 rm -rf build-osx
+
+pushd .
 
 mkdir build-osx
 
@@ -30,5 +32,6 @@ cp ../../data/icons/$GAMENAME.icns "$GAMENAME_PRETTY.app/Contents/Resources/"
 rm -rf "../output/$GAMENAME-osx.zip"
 zip -r -y "../output/$GAMENAME-osx.zip" "$GAMENAME_PRETTY.app"
 
-cd ..
+popd
+
 rm -rf build-osx

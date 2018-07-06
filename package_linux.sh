@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # TODO: use install target
@@ -6,6 +6,8 @@ set -e
 mkdir -p output
 
 rm -rf build-linux
+
+pushd .
 
 mkdir build-linux
 
@@ -50,5 +52,6 @@ cd ..
 rm -rf "../../output/$GAMENAME-linux.tar.gz"
 tar czvf "../../output/$GAMENAME-linux.tar.gz" "$GAMENAME_PRETTY"
 
-cd ../..
+popd
+
 rm -rf build-linux

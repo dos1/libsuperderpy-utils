@@ -7,6 +7,8 @@ rm -rf build-android
 
 . $LIBSUPERDERPY_ANDROID_ENV
 
+pushd .
+
 mkdir build-android
 
 cd build-android
@@ -23,5 +25,6 @@ GAMENAME_PRETTY=${GAMENAME_PRETTY#LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL=}
 
 cp android/bin/$GAMENAME-debug.apk ../output/$GAMENAME-android-debug.apk
 
-cd ..
+popd
+
 rm -rf build-android

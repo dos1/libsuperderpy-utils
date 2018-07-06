@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # TODO: use install target
@@ -6,6 +6,8 @@ set -e
 mkdir -p output
 
 rm -rf build-win64
+
+pushd .
 
 mkdir build-win64
 
@@ -44,5 +46,6 @@ cd ..
 rm -rf "../../output/$GAMENAME-win64.zip"
 zip -r -y "../../output/$GAMENAME-win64.zip" "$GAMENAME_PRETTY"
 
-cd ../..
+popd
+
 rm -rf build-win64

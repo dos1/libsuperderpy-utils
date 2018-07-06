@@ -7,6 +7,8 @@ rm -rf build-html5
 
 . /usr/lib/emsdk/emsdk_env.sh /usr/lib/emsdk
 
+pushd .
+
 mkdir build-html5
 
 cd build-html5
@@ -25,5 +27,7 @@ ninja ${GAMENAME}_js
 cd output/$GAMENAME
 zip -9r $GAMENAME-html5.zip *
 mv $GAMENAME-html5.zip ../../../output/
+
+popd
 
 rm -rf build-html5

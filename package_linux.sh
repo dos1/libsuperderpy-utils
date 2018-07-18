@@ -13,9 +13,9 @@ mkdir build-linux
 
 cd build-linux
 
-cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo  -DUSE_CLANG_TIDY=no -G Ninja
+schroot --chroot steamrt_scout_amd64 -- cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo  -DUSE_CLANG_TIDY=no -DCMAKE_C_FLAGS="--std=c99"
 
-ninja
+schroot --chroot steamrt_scout_amd64 -- make -j3
 
 GAMENAME=`grep LIBSUPERDERPY_GAMENAME:INTERNAL CMakeCache.txt`
 GAMENAME=${GAMENAME#LIBSUPERDERPY_GAMENAME:INTERNAL=}
@@ -47,6 +47,7 @@ rm -rf data/.git
 rm -rf data/stuff
 
 strip $GAMENAME *.so
+cp -r ../../../linux-libs/* ./
 
 cd ..
 rm -rf "../../output/$GAMENAME-linux.tar.gz"

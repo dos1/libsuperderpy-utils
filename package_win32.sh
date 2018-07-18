@@ -30,7 +30,7 @@ mkdir "$GAMENAME_PRETTY"
 
 cd "$GAMENAME_PRETTY"
 
-cp ../../src/*.exe ../../src/*.dll ../../src/gamestates/*.dll ../../../win32-libs/* ./
+cp ../../src/*.exe ../../src/*.dll ../../src/gamestates/*.dll ../../../libs/win32/* ./
 cp -r ../../../../data ./
 cp -r ../../../../COPYING ./
 rm -rf data/icons/*

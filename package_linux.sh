@@ -47,7 +47,7 @@ rm -rf data/.git
 rm -rf data/stuff
 
 strip $GAMENAME *.so
-cp -r ../../../linux-libs/* ./
+cp -r ../../../libs/linux/* ./
 
 cd ..
 rm -rf "../../output/$GAMENAME-linux.tar.gz"

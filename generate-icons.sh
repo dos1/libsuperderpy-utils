@@ -83,6 +83,6 @@ echo "Creating ICNS..."
 png2icns ${FILE%.*}.icns $MACFILELIST
 
 echo "Creating icon.rc..."
-echo "IDI_ICON1 ICON DISCARDABLE \"data/icons/${FILE%.*}.ico\"" > icon.rc
+echo "IDI_ICON1 ICON DISCARDABLE \"${FILE%.*}.ico\"" > icon.rc
 
 echo "Done!"

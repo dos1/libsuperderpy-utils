@@ -321,6 +321,7 @@ else:
 
 previewScene = QGraphicsScene(window)
 ui.preview.setScene(previewScene)
+ui.preview.setBackgroundBrush(QBrush(QColor("grey"), Qt.Dense3Pattern))
 preview = previewScene.addPixmap(QPixmap())
     
 def unreverse():

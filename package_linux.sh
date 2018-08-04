@@ -13,7 +13,10 @@ mkdir build-linux
 
 cd build-linux
 
-schroot --chroot steamrt_scout_amd64 -- cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo  -DUSE_CLANG_TIDY=no -DCMAKE_C_FLAGS="--std=c99"
+mkdir -p /tmp/steam-chroot-home
+
+# we set HOME, so tools like git from inside chroot don't pick up config files from current user's home, which may be incompatible
+schroot --chroot steamrt_scout_amd64 -- /bin/sh -c 'HOME=/tmp/steam-chroot-home cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo  -DUSE_CLANG_TIDY=no -DCMAKE_C_FLAGS="--std=c99"'
 
 schroot --chroot steamrt_scout_amd64 -- make -j3
 

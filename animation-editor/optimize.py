@@ -11,7 +11,7 @@ def cropImage(filename):
     imageBox = image.convert("RGBa").getbbox()
     if not imageBox:
         imageBox = (0, 0, 1, 1)
-    image.crop(imageBox).save(filename)
+    image.crop(imageBox).save(filename, lossless=True)
     frameCache[filename] = imageBox
     return imageBox
 

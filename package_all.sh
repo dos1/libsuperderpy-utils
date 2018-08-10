@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-./package_linux.sh
+./package_linux_amd64.sh
 ./package_win32.sh
 ./package_win64.sh
 ./package_osx.sh

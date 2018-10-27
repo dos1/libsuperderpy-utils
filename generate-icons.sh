@@ -45,7 +45,7 @@ for SIZE in $SIZES
 do
   mkdir -p $SIZE
   echo "  $SIZE"
-  convert -density $SIZE -background none -interpolate $INTERPOLATION $FILE -interpolative-resize "$SIZE"x png32:"$SIZE/${FILE%.*}.png"
+  convert -density $SIZE -background none -interpolate $INTERPOLATION $FILE -resize "$SIZE"x png32:"$SIZE/${FILE%.*}.png"
 done
 
 for SIZE in $ICOSIZES

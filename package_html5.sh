@@ -25,6 +25,7 @@ ninja
 ninja ${GAMENAME}_js
 
 cd output/$GAMENAME
+mv $GAMENAME.html index.html
 zip -9r $GAMENAME-html5.zip *
 mv $GAMENAME-html5.zip ../../../output/
 

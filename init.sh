@@ -9,11 +9,13 @@ git init
 git config -f .gitmodules --get-regexp '^submodule\..*\.path$' |
     while read path_key path
     do
-        url_key=$(echo $path_key | sed 's/\.path/.url/')
+        url_key=$(echo $path_key | sed -e 's/\.path/.url/')
         url=$(git config -f .gitmodules --get "$url_key")
         rmdir $path
-        git submodule add https://gitlab.com/dosowisko.net/libsuperderpy-examples.git/$url $path
+        repo=$(echo $url | sed -e 's/^\.\.\/\.\.\///g')
+        git submodule add https://gitlab.com/$repo $path
     done
 # TODO: icons, desktop file, gamenames in cmake
+sed -i -e 's/https:\/\/gitlab\.com\//..\/..\//' .gitmodules
 git add .
 git commit -am "initial commit"

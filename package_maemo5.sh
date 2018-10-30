@@ -10,6 +10,7 @@ rm -rf build-maemo5
 oldpath=`pwd`
 
 mkdir build-maemo5
+chmod 777 build-maemo5 # docker might need it
 
 cd build-maemo5
 
@@ -51,4 +52,4 @@ tar czvf "../../output/$GAMENAME-maemo5.tar.gz" "$GAMENAME_PRETTY"
 
 cd $oldpath
 
-rm -rf build-maemo5
+rm -rf build-maemo5 || true

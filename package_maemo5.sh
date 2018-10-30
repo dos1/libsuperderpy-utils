@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # TODO: use install target
@@ -7,7 +7,7 @@ mkdir -p output
 
 rm -rf build-maemo5
 
-pushd .
+oldpath=`pwd`
 
 mkdir build-maemo5
 
@@ -49,6 +49,6 @@ cd ..
 rm -rf "../../output/$GAMENAME-maemo5.tar.gz"
 tar czvf "../../output/$GAMENAME-maemo5.tar.gz" "$GAMENAME_PRETTY"
 
-popd
+cd $oldpath
 
 rm -rf build-maemo5

@@ -13,7 +13,7 @@ mkdir build-maemo5
 
 cd build-maemo5
 
-docker run --rm --privileged -it -v $(realpath ../..):/scratchbox/users/admin/src dosowisko/libsuperderpy-maemo5 "cd /src/utils/build-maemo5 && cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DMAEMO=ON && make -j3"
+docker run --rm --privileged -it -v $(realpath ../..):/scratchbox/users/admin/src dosowisko/libsuperderpy-maemo5 "cd /src/utils/build-maemo5 && cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DMAEMO5=ON && make -j3"
 
 GAMENAME=`grep LIBSUPERDERPY_GAMENAME:INTERNAL CMakeCache.txt`
 GAMENAME=${GAMENAME#LIBSUPERDERPY_GAMENAME:INTERNAL=}
@@ -29,16 +29,6 @@ mkdir "$GAMENAME_PRETTY"
 cd "$GAMENAME_PRETTY"
 
 cp ../../src/$GAMENAME ../../src/*.so ../../src/gamestates/*.so ./
-cp -r ../../../../src ./
-cp -r ../../../../libsuperderpy ./
-rm -rf libsuperderpy/.git
-if [ -d "../../../../cmake" ]; then
-  cp -r ../../../../cmake ./
-fi
-cp -r ../../../../CMakeLists.txt ./
-if [ -f "../../../../README" ]; then
-  cp -r ../../../../README ./
-fi
 cp -r ../../../../COPYING ./
 cp -r ../../../../data ./
 rm -rf data/.git

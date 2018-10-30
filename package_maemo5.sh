@@ -13,7 +13,16 @@ mkdir build-maemo5
 
 cd build-maemo5
 
-docker run --rm --privileged -it -v $(realpath ../..):/scratchbox/users/admin/src dosowisko/libsuperderpy-maemo5 "cd /src/utils/build-maemo5 && cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DMAEMO5=ON && make -j3"
+if [ -e /etc/maemo_version ]; then
+  NO_DOCKER=1
+fi
+
+if [ -z "$NO_DOCKER" ]; then
+  docker run --rm --privileged -it -v $(realpath ../..):/scratchbox/users/admin/src dosowisko/libsuperderpy-maemo5 "cd /src/utils/build-maemo5 && cmake ../.. -DCMAKE_BUILD_TYPE=Release -DMAEMO5=ON && make -j3"
+else
+  cmake ../.. -DCMAKE_BUILD_TYPE=Release -DMAEMO5=ON
+  make -j3
+fi
 
 GAMENAME=`grep LIBSUPERDERPY_GAMENAME:INTERNAL CMakeCache.txt`
 GAMENAME=${GAMENAME#LIBSUPERDERPY_GAMENAME:INTERNAL=}

@@ -2,9 +2,16 @@
 set -e
 
 if [ -z "$1" ]; then
-  echo "Please provide the release number with the arguments."
-  exit 1
+  GITREV=`cd ..; git rev-list --count HEAD`
+  read -p "Please provide the version code: [$GITREV] " VERSION_CODE
+  if [ -z "$VERSION_CODE" ]; then
+    VERSION_CODE="$GITREV"
+  fi
+else
+  VERSION_CODE="$1"
 fi
+
+echo "Version code: $VERSION_CODE"
 
 mkdir -p output
 
@@ -18,7 +25,7 @@ mkdir build-android
 
 cd build-android
 
-cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/android.toolchain -DCMAKE_BUILD_TYPE=Release -DLIBSUPERDERPY_ANDROID_DEBUGGABLE=false -DLIBSUPERDERPY_RELEASE=$1 -DANDROID_TARGET=$LIBSUPERDERPY_ANDROID_TARGET -DUSE_CLANG_TIDY=no
+cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/android.toolchain -DCMAKE_BUILD_TYPE=Release -DLIBSUPERDERPY_ANDROID_DEBUGGABLE=false -DLIBSUPERDERPY_RELEASE=$VERSION_CODE -DANDROID_TARGET=$LIBSUPERDERPY_ANDROID_TARGET -DUSE_CLANG_TIDY=no
 
 make -j3
 

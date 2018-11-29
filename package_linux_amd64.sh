@@ -17,7 +17,7 @@ mkdir -p /tmp/steam-chroot-home
 
 if [ -z "$NO_STEAM_RUNTIME" ]; then
   # we set HOME, so tools like git from inside chroot don't pick up config files from current user's home, which may be incompatible
-  schroot --chroot steamrt_scout_amd64 -- /bin/sh -c 'HOME=/tmp/steam-chroot-home cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo  -DUSE_CLANG_TIDY=no -DCMAKE_C_FLAGS="--std=c99"'
+  schroot --chroot steamrt_scout_amd64 -- /bin/sh -c 'HOME=/tmp/steam-chroot-home cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo  -DUSE_CLANG_TIDY=no -DCMAKE_C_FLAGS="--std=c99 -fPIC" -DCMAKE_CXX_FLAGS="-fPIC"'
   schroot --chroot steamrt_scout_amd64 -- make -j3
 else
   # TODO: make sure it's the proper arch

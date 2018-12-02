@@ -26,11 +26,11 @@ ICOFILELIST=
 PNGFILELIST=
 MACFILELIST=
 
-INTERPOLATION=spline
+INTERPOLATION=Spline
 
 if [[ "$2" == "--pixelart" ]]
 then
-  INTERPOLATION=nearest-neighbor
+  INTERPOLATION="Nearest -filter point"
 fi
 
 if [[ ! -e "$FILE" ]]
@@ -68,6 +68,9 @@ echo "Optimizing..."
 for F in */*.png
 do
   echo "  $F"
+  if [ -f "$F.bak" ]; then
+    rm $F.bak
+  fi
   optipng -nb $F &> /dev/null
 done
 

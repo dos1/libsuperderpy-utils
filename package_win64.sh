@@ -13,7 +13,7 @@ mkdir build-win64
 
 cd build-win64
 
-cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/x86_64-w64-mingw32.toolchain -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUSE_CLANG_TIDY=no -G Ninja
+cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/x86_64-w64-mingw32.toolchain -DCMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja
 
 ninja
 

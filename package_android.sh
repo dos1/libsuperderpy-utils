@@ -13,7 +13,7 @@ mkdir build-android
 
 cd build-android
 
-cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/android.toolchain -DCMAKE_BUILD_TYPE=RelWithDebInfo -DANDROID_TARGET=$LIBSUPERDERPY_ANDROID_TARGET -DUSE_CLANG_TIDY=no
+cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/android.toolchain -DCMAKE_BUILD_TYPE=RelWithDebInfo -DANDROID_TARGET=$LIBSUPERDERPY_ANDROID_TARGET
 
 make -j3
 

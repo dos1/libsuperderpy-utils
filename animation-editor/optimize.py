@@ -9,11 +9,12 @@ frameCache = {}
 def cropImage(filename):
     image = Image.open(filename)
     imageBox = image.convert("RGBa").getbbox()
+    w, h = image.width, image.height
     if not imageBox:
-        imageBox = (0, 0, 1, 1)
+        imageBox = (0, 0, 1, 1, w, h)
     image.crop(imageBox).save(filename, lossless=True)
-    frameCache[filename] = imageBox
-    return imageBox
+    frameCache[filename] = (imageBox[0], imageBox[1], imageBox[2], imageBox[3], w, h)
+    return frameCache[filename]
 
 def cropFrame(config, id):
     print("Cropping frame", id)
@@ -23,6 +24,13 @@ def cropFrame(config, id):
     y = config.get(section, 'y', fallback=None)
     w = config.get('animation', 'width', fallback=-1)
     h = config.get('animation', 'height', fallback=-1)
+    sx = config.get(section, 'sx', fallback=None)
+    sy = config.get(section, 'sy', fallback=None)
+    sw = config.get(section, 'sw', fallback=None)
+    sh = config.get(section, 'sh', fallback=None)
+    if (sx is not None) or (sy is not None) or (sw is not None) or (sh is not None):
+        print("   spritesheeted; not cropping")
+        return None
     if (frame is not None) and (x is None) and (y is None):
         if frameCache.get(frame):
             print("   from cache", frame, frameCache[frame])
@@ -37,7 +45,8 @@ def cropFrame(config, id):
             return box
     else:
         if frame is not None:
-            frameCache[frame] = (x, y, w, h)
+            image = Image.open(frame)
+            frameCache[frame] = (int(x), int(y), image.width, image.height, int(w), int(h))
             return frameCache[frame]
     return None
 
@@ -51,9 +60,10 @@ def cropAnimation(filename):
     for i in range(frames):
         box = cropFrame(config, i)
         if box:
-            w = max(box[2], w)
-            h = max(box[3], h)
+            w = max(box[4], w)
+            h = max(box[5], h)
     if w > -1 and h > -1:
+        print("...done. Size: " + str(w) + "x" + str(h))
         config.set('animation', 'width', str(w))
         config.set('animation', 'height', str(h))
     with open(filename, 'w') as configfile:

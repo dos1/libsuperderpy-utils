@@ -9,4 +9,4 @@ set -e
 ./package_html5.sh
 ./package_wasm.sh
 ./package_android.sh
-./package_maemo.sh
+./package_maemo5.sh

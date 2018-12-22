@@ -5,15 +5,13 @@ mkdir -p output
 
 rm -rf build-wasm
 
-. /usr/lib/emsdk/emsdk_env.sh /usr/lib/emsdk
-
 pushd .
 
 mkdir build-wasm
 
 cd build-wasm
 
-emcmake cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DALLEGRO_INCLUDE_PATH=$ALLEGRO_EMSCRIPTEN_DIR/include -DALLEGRO_LIBRARY_PATH=$ALLEGRO_EMSCRIPTEN_DIR/lib/liballegro_monolith-static.a -DCMAKE_INSTALL_PREFIX=output -DLIBSUPERDERPY_EMSCRIPTEN_MODE=wasm -G Ninja
+emcmake cmake ../.. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$EMSCRIPTEN/system -DALLEGRO5_LIBRARY=$EMSCRIPTEN/system/lib/allegro5.so -DCMAKE_INSTALL_PREFIX=output -DLIBSUPERDERPY_EMSCRIPTEN_MODE=wasm -G Ninja
 
 GAMENAME=`grep LIBSUPERDERPY_GAMENAME:INTERNAL CMakeCache.txt`
 GAMENAME=${GAMENAME#LIBSUPERDERPY_GAMENAME:INTERNAL=}
@@ -25,7 +23,9 @@ ninja
 ninja ${GAMENAME}_js
 
 cd output/$GAMENAME
+sed -i -e 's/$legalf32//g' $GAMENAME.js # https://github.com/kripken/emscripten/issues/5436
 mv $GAMENAME.html index.html
+rm -rf gamestates
 zip -9r $GAMENAME-wasm.zip *
 mv $GAMENAME-wasm.zip ../../../output/
 

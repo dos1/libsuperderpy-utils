@@ -21,8 +21,8 @@ if [ -z "$NO_STEAM_RUNTIME" ]; then
   schroot --chroot steamrt_scout_amd64 -- make -j3
 else
   # TODO: make sure it's the proper arch
-  cmake ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo
-  make -j3
+  cmake -GNinja ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  ninja
 fi
 
 GAMENAME=`grep LIBSUPERDERPY_GAMENAME:INTERNAL CMakeCache.txt`

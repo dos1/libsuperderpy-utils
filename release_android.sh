@@ -35,7 +35,7 @@ GAMENAME=${GAMENAME#LIBSUPERDERPY_GAMENAME:INTERNAL=}
 GAMENAME_PRETTY=`grep LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL CMakeCache.txt`
 GAMENAME_PRETTY=${GAMENAME_PRETTY#LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL=}
 
-cp android/bin/$GAMENAME-debug.apk ../output/$GAMENAME-android-unsigned-unaligned.apk
+cp android/app/build/outputs/apk/debug/app-debug.apk ../output/$GAMENAME-android-unsigned-unaligned.apk
 
 popd
 
@@ -43,11 +43,14 @@ rm -rf build-android
 
 cd output
 
-$ANDROID_BUILD_TOOLS/zipalign -f -v 4 ../output/$GAMENAME-android-unsigned-unaligned.apk ../output/$GAMENAME-android-unsigned.apk
+# for some reason, this needs to be done twice; maybe there's a way to get gradle to already align the debug apk? (or maybe it's already aligned, just zipalign incompatible?)
+$ANDROID_BUILD_TOOLS/zipalign -f -v 4 ../output/$GAMENAME-android-unsigned-unaligned.apk ../output/$GAMENAME-android-unsigned-unaligned2.apk || true
+$ANDROID_BUILD_TOOLS/zipalign -f -v 4 ../output/$GAMENAME-android-unsigned-unaligned2.apk ../output/$GAMENAME-android-unsigned.apk
 
 $ANDROID_BUILD_TOOLS/apksigner sign --ks $ANDROID_KEYSTORE --out ../output/$GAMENAME-android.apk ../output/$GAMENAME-android-unsigned.apk
 
 rm ../output/$GAMENAME-android-unsigned-unaligned.apk
+rm ../output/$GAMENAME-android-unsigned-unaligned2.apk
 rm ../output/$GAMENAME-android-unsigned.apk
 
 cd ..

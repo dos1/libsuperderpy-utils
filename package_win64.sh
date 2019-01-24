@@ -39,12 +39,13 @@ rm -rf data/.git
 rm -rf data/stuff
 rm data/CMakeLists.txt
 rm data/$GAMENAME.desktop
+rm data/icons/CMakeLists.txt
 
 strip *.exe *.dll
 
 cd ..
 rm -rf "../../output/$GAMENAME-win64.zip"
-zip -r -y "../../output/$GAMENAME-win64.zip" "$GAMENAME_PRETTY"
+zip -9ry "../../output/$GAMENAME-win64.zip" "$GAMENAME_PRETTY"
 
 popd
 

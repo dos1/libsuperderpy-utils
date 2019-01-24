@@ -114,7 +114,7 @@ class BundleFixer
     path = path.sub("@loader_path", context)
     # follow symlinks
     macports = ENV["LIBSUPERDERPY_OSXCROSS_ROOT"] + "/macports/pkgs"
-    if path.start_with?("/home") || path.start_with?("/builds")
+    if path.start_with?("/home") || path.start_with?("/builds") || path.start_with?("/src")
       macports = ""
     end
     File.realpath macports + path

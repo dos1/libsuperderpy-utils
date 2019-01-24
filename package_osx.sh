@@ -32,7 +32,7 @@ mv "$GAMENAME.app" "../$GAMENAME_PRETTY.app"
 cd ..
 
 rm -rf "../output/$GAMENAME-osx.zip"
-zip -r -y "../output/$GAMENAME-osx.zip" "$GAMENAME_PRETTY.app"
+zip -9ry "../output/$GAMENAME-osx.zip" "$GAMENAME_PRETTY.app"
 
 popd
 

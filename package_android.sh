@@ -5,8 +5,6 @@ mkdir -p output
 
 rm -rf build-android
 
-. $LIBSUPERDERPY_ANDROID_ENV
-
 pushd .
 
 mkdir build-android

@@ -17,15 +17,13 @@ mkdir -p output
 
 rm -rf build-android
 
-. $LIBSUPERDERPY_ANDROID_ENV
-
 pushd .
 
 mkdir build-android
 
 cd build-android
 
-cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/android.toolchain -DCMAKE_BUILD_TYPE=Release -DLIBSUPERDERPY_ANDROID_DEBUGGABLE=false -DLIBSUPERDERPY_RELEASE=$VERSION_CODE -DANDROID_TARGET=$LIBSUPERDERPY_ANDROID_TARGET -DUSE_CLANG_TIDY=no
+cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/android.toolchain -DCMAKE_BUILD_TYPE=Release -DLIBSUPERDERPY_ANDROID_DEBUGGABLE=false -DLIBSUPERDERPY_RELEASE=$VERSION_CODE -DANDROID_TARGET=$LIBSUPERDERPY_ANDROID_TARGET
 
 make -j3
 

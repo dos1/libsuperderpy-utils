@@ -1,14 +1,18 @@
 #!/bin/bash
 set -e
 
+GITREV=`cd ..; git rev-list --count HEAD`
 if [ -z "$1" ]; then
-  GITREV=`cd ..; git rev-list --count HEAD`
   read -p "Please provide the version code: [$GITREV] " VERSION_CODE
   if [ -z "$VERSION_CODE" ]; then
     VERSION_CODE="$GITREV"
   fi
 else
-  VERSION_CODE="$1"
+  if [[ "$1" == "git" ]]; then
+    VERSION_CODE=$GITREV
+  else
+    VERSION_CODE="$1"
+  fi
 fi
 
 echo "Version code: $VERSION_CODE"
@@ -45,7 +49,23 @@ cd output
 $ANDROID_BUILD_TOOLS/zipalign -f -v 4 ../output/$GAMENAME-android-unsigned-unaligned.apk ../output/$GAMENAME-android-unsigned-unaligned2.apk || true
 $ANDROID_BUILD_TOOLS/zipalign -f -v 4 ../output/$GAMENAME-android-unsigned-unaligned2.apk ../output/$GAMENAME-android-unsigned.apk
 
-$ANDROID_BUILD_TOOLS/apksigner sign --ks $ANDROID_KEYSTORE --out ../output/$GAMENAME-android.apk ../output/$GAMENAME-android-unsigned.apk
+TMPKEYFILE=""
+KEYSTORE="$ANDROID_KEYSTORE"
+if [ -z "$ANDROID_KEYSTORE" ]; then
+  KEYSTORE=`mktemp`
+  TMPKEYFILE=$KEYSTORE
+  echo $ANDROID_KEYSTORE_BASE64 | base64 -d - > $KEYSTORE
+fi
+
+if [ -z ${ANDROID_KEYSTORE_PASSWORD+x} ]; then
+  $ANDROID_BUILD_TOOLS/apksigner sign --ks $KEYSTORE --out ../output/$GAMENAME-android.apk ../output/$GAMENAME-android-unsigned.apk
+else
+  $ANDROID_BUILD_TOOLS/apksigner sign --ks $KEYSTORE --ks-pass env:ANDROID_KEYSTORE_PASSWORD --out ../output/$GAMENAME-android.apk ../output/$GAMENAME-android-unsigned.apk
+fi
+
+if [ "$TMPKEYFILE" ]; then
+  rm $TMPKEYFILE
+fi
 
 rm ../output/$GAMENAME-android-unsigned-unaligned.apk
 rm ../output/$GAMENAME-android-unsigned-unaligned2.apk

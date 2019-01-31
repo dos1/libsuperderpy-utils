@@ -41,7 +41,7 @@ rm -rf data/stuff
 rm data/CMakeLists.txt
 rm data/icons/CMakeLists.txt
 
-cp -r /steamlink-sdk/rootfs/usr/lib/liballegro*.so.5.2 ./
+cp -L -r /steamlink-sdk/rootfs/usr/lib/liballegro*.so.5.2 ./
 
 echo "name=$GAMENAME_PRETTY" > toc.txt
 echo "icon=data/icons/72/$GAMENAME.png" >> toc.txt

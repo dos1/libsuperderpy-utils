@@ -57,7 +57,7 @@ if [ -z "$ANDROID_KEYSTORE" ]; then
   echo $ANDROID_KEYSTORE_BASE64 | base64 -d - > $KEYSTORE
 fi
 
-if [ -z ${ANDROID_KEYSTORE_PASSWORD+x} ]; then
+if [ -z ${ANDROID_KEYSTORE_PASSWORD} ]; then
   $ANDROID_BUILD_TOOLS/apksigner sign --ks $KEYSTORE --out ../output/$GAMENAME-android.apk ../output/$GAMENAME-android-unsigned.apk
 else
   $ANDROID_BUILD_TOOLS/apksigner sign --ks $KEYSTORE --ks-pass env:ANDROID_KEYSTORE_PASSWORD --out ../output/$GAMENAME-android.apk ../output/$GAMENAME-android-unsigned.apk

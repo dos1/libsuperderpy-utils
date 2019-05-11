@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+mkdir -p ../.assetcache
 sudo podman run --rm -it -v `realpath ..`:/scratchbox/users/admin/src --privileged dosowisko/libsuperderpy-maemo5 "cd /src/utils && ./package_maemo5.sh" # with docker, add "--userns=host"
 podman run --rm -it -v `realpath ..`:/src -w /src/utils dosowisko/libsuperderpy-linux-amd64 /src/utils/package_linux_amd64.sh
 podman run --rm -it -v `realpath ..`:/src -w /src/utils dosowisko/libsuperderpy-linux-i686 /src/utils/package_linux_i686.sh

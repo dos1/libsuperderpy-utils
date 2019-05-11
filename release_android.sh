@@ -49,12 +49,20 @@ cd output
 $ANDROID_BUILD_TOOLS/zipalign -f -v 4 ../output/$GAMENAME-android-unsigned-unaligned.apk ../output/$GAMENAME-android-unsigned-unaligned2.apk || true
 $ANDROID_BUILD_TOOLS/zipalign -f -v 4 ../output/$GAMENAME-android-unsigned-unaligned2.apk ../output/$GAMENAME-android-unsigned.apk
 
+rm ../output/$GAMENAME-android-unsigned-unaligned.apk
+rm ../output/$GAMENAME-android-unsigned-unaligned2.apk
+
 TMPKEYFILE=""
 KEYSTORE="$ANDROID_KEYSTORE"
 if [ -z "$ANDROID_KEYSTORE" ]; then
-  KEYSTORE=`mktemp`
-  TMPKEYFILE=$KEYSTORE
-  echo $ANDROID_KEYSTORE_BASE64 | base64 -d - > $KEYSTORE
+  if [ "$ANDROID_KEYSTORE_BASE64" ]; then
+    KEYSTORE=`mktemp`
+    TMPKEYFILE=$KEYSTORE
+    echo $ANDROID_KEYSTORE_BASE64 | base64 -d - > $KEYSTORE
+  else
+    echo "No signing key available, exiting without signing..."
+    exit 0
+  fi
 fi
 
 if [ -z ${ANDROID_KEYSTORE_PASSWORD} ]; then
@@ -67,8 +75,4 @@ if [ "$TMPKEYFILE" ]; then
   rm $TMPKEYFILE
 fi
 
-rm ../output/$GAMENAME-android-unsigned-unaligned.apk
-rm ../output/$GAMENAME-android-unsigned-unaligned2.apk
 rm ../output/$GAMENAME-android-unsigned.apk
-
-cd ..

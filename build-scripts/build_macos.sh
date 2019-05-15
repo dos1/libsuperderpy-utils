@@ -5,13 +5,13 @@ PATH=$LIBSUPERDERPY_OSXCROSS_ROOT/bin:$PATH
 
 mkdir -p output
 
-rm -rf build-osx
+rm -rf build-macos
 
 pushd .
 
-mkdir build-osx
+mkdir build-macos
 
-cd build-osx
+cd build-macos
 
 cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../libsuperderpy/cmake/osxcross64.toolchain -DCMAKE_BUILD_TYPE=RelWithDebInfo -G Ninja
 
@@ -25,15 +25,15 @@ GAMENAME_PRETTY=${GAMENAME_PRETTY#LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL=}
 
 cd bin
 
-../../fixup_bundle.rb "$GAMENAME.app"
+../../build-scripts/fixup_macos_bundle.rb "$GAMENAME.app"
 
 mv "$GAMENAME.app" "../$GAMENAME_PRETTY.app"
 
 cd ..
 
-rm -rf "../output/$GAMENAME-osx.zip"
-zip -9ry "../output/$GAMENAME-osx.zip" "$GAMENAME_PRETTY.app"
+rm -rf "../output/$GAMENAME-macos.zip"
+zip -9ry "../output/$GAMENAME-macos.zip" "$GAMENAME_PRETTY.app"
 
 popd
 
-rm -rf build-osx
+rm -rf build-macos

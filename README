@@ -1,0 +1,9 @@
+libsuperderpy tools, helper utilities and build scripts
+----
+
+- package_*.sh - build game for a specified platform using docker containers (always call from this directory!)
+- animation-editor - PyQt5-based editor for libsuperderpy spritesheets, plus bunch of python scripts to work with them
+- build-scripts - scripts meant to be executed inside docker containers
+
+Note: package_android_*.sh uses LIBSUPERDERPY_ANDROID_KEYSTORE/LIBSUPERDERPY_ANDROID_KEYSTORE_BASE64 and LIBSUPERDERPY_ANDROID_KEYSTORE_PASSWORD environment variables to sign release APKs
+Note: Maemo5 and Flatpak containers use sudo to become root, because they require a privileged container in order to set up binfmt handlers (take note that this change applies to the whole kernel, not just the container, so you may need to reregister your arm/aarch64 handlers!) and to handle Flatpak containers

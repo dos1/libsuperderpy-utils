@@ -13,7 +13,7 @@ mkdir build-pocketchip
 
 cd build-pocketchip
 
-cmake -GNinja ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DPOCKETCHIP=1
+cmake -GNinja ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=/toolchain/pocketchip.toolchain
 ninja
 
 GAMENAME=`grep LIBSUPERDERPY_GAMENAME:INTERNAL CMakeCache.txt`
@@ -45,7 +45,7 @@ cp -r ../../../../data ./
 rm -rf data/.git
 rm -rf data/stuff
 
-cp /usr/local/lib/liballegro_acodec.so.5.2 /usr/local/lib/liballegro_audio.so.5.2 /usr/local/lib/liballegro_color.so.5.2 /usr/local/lib/liballegro_font.so.5.2 /usr/local/lib/liballegro_image.so.5.2 /usr/local/lib/liballegro_main.so.5.2 /usr/local/lib/liballegro_memfile.so.5.2 /usr/local/lib/liballegro_physfs.so.5.2 /usr/local/lib/liballegro_primitives.so.5.2 /usr/local/lib/liballegro.so.5.2 /usr/local/lib/liballegro_ttf.so.5.2 /usr/local/lib/liballegro_video.so.5.2 /usr/local/lib/libdumb.so.2 /usr/local/lib/libFLAC.so.8 /usr/local/lib/libfreetype.so.6 /usr/local/lib/libharfbuzz.so /usr/local/lib/libjpeg.so.8 /usr/local/lib/libogg.so.0 /usr/local/lib/libopusfile.so.0 /usr/local/lib/libopus.so.0 /usr/local/lib/libpng16.so.16 /usr/local/lib/libSDL2-2.0.so.0 /usr/local/lib/libtheoradec.so.1 /usr/local/lib/libvorbisfile.so.3 /usr/local/lib/libvorbis.so.0 /usr/local/lib/libwebp.so.7 /usr/local/lib/libz.so.1 /usr/local/lib/libphysfs.so.1 ./
+cp $SYSROOT/usr/local/lib/liballegro_acodec.so.5.2 $SYSROOT/usr/local/lib/liballegro_audio.so.5.2 $SYSROOT/usr/local/lib/liballegro_color.so.5.2 $SYSROOT/usr/local/lib/liballegro_font.so.5.2 $SYSROOT/usr/local/lib/liballegro_image.so.5.2 $SYSROOT/usr/local/lib/liballegro_main.so.5.2 $SYSROOT/usr/local/lib/liballegro_memfile.so.5.2 $SYSROOT/usr/local/lib/liballegro_physfs.so.5.2 $SYSROOT/usr/local/lib/liballegro_primitives.so.5.2 $SYSROOT/usr/local/lib/liballegro.so.5.2 $SYSROOT/usr/local/lib/liballegro_ttf.so.5.2 $SYSROOT/usr/local/lib/liballegro_video.so.5.2 $SYSROOT/usr/local/lib/libdumb.so.2 $SYSROOT/usr/local/lib/libFLAC.so.8 $SYSROOT/usr/local/lib/libfreetype.so.6 $SYSROOT/usr/local/lib/libharfbuzz.so $SYSROOT/usr/local/lib/libjpeg.so.8 $SYSROOT/usr/local/lib/libogg.so.0 $SYSROOT/usr/local/lib/libopusfile.so.0 $SYSROOT/usr/local/lib/libopus.so.0 $SYSROOT/usr/local/lib/libpng16.so.16 $SYSROOT/usr/local/lib/libSDL2-2.0.so.0 $SYSROOT/usr/local/lib/libtheoradec.so.1 $SYSROOT/usr/local/lib/libvorbisfile.so.3 $SYSROOT/usr/local/lib/libvorbis.so.0 $SYSROOT/usr/local/lib/libwebp.so.7 $SYSROOT/usr/local/lib/libz.so.1 $SYSROOT/usr/local/lib/libphysfs.so.1 ./
 
 cd ..
 rm -rf "../../output/$GAMENAME-pocketchip.tar.gz"

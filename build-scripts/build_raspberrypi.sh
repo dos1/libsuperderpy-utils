@@ -48,8 +48,8 @@ rm -rf data/stuff
 cp $SYSROOT/usr/local/lib/liballegro_acodec.so.5.2 $SYSROOT/usr/local/lib/liballegro_audio.so.5.2 $SYSROOT/usr/local/lib/liballegro_color.so.5.2 $SYSROOT/usr/local/lib/liballegro_font.so.5.2 $SYSROOT/usr/local/lib/liballegro_image.so.5.2 $SYSROOT/usr/local/lib/liballegro_main.so.5.2 $SYSROOT/usr/local/lib/liballegro_memfile.so.5.2 $SYSROOT/usr/local/lib/liballegro_physfs.so.5.2 $SYSROOT/usr/local/lib/liballegro_primitives.so.5.2 $SYSROOT/usr/local/lib/liballegro.so.5.2 $SYSROOT/usr/local/lib/liballegro_ttf.so.5.2 $SYSROOT/usr/local/lib/liballegro_video.so.5.2 $SYSROOT/usr/local/lib/libdumb.so.2 $SYSROOT/usr/local/lib/libFLAC.so.8 $SYSROOT/usr/local/lib/libfreetype.so.6 $SYSROOT/usr/local/lib/libharfbuzz.so $SYSROOT/usr/local/lib/libjpeg.so.8 $SYSROOT/usr/local/lib/libogg.so.0 $SYSROOT/usr/local/lib/libopusfile.so.0 $SYSROOT/usr/local/lib/libopus.so.0 $SYSROOT/usr/local/lib/libpng16.so.16 $SYSROOT/usr/local/lib/libSDL2-2.0.so.0 $SYSROOT/usr/local/lib/libtheoradec.so.1 $SYSROOT/usr/local/lib/libvorbisfile.so.3 $SYSROOT/usr/local/lib/libvorbis.so.0 $SYSROOT/usr/local/lib/libwebp.so.7 $SYSROOT/usr/local/lib/libz.so.1 $SYSROOT/usr/local/lib/libphysfs.so.1 ./
 
 cd ..
-rm -rf "../../output/$GAMENAME-raspberrypi.tar.gz"
-tar czvf "../../output/$GAMENAME-raspberrypi.tar.gz" "$GAMENAME_PRETTY"
+rm -rf "../../output/$GAMENAME-raspberrypi.zip"
+zip -9r "../../output/$GAMENAME-raspberrypi.zip" "$GAMENAME_PRETTY"
 
 popd
 

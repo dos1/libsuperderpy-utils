@@ -37,7 +37,7 @@ GAMENAME=${GAMENAME#LIBSUPERDERPY_GAMENAME:INTERNAL=}
 GAMENAME_PRETTY=`grep LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL CMakeCache.txt`
 GAMENAME_PRETTY=${GAMENAME_PRETTY#LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL=}
 
-cp android/app/build/outputs/apk/debug/app-debug.apk ../output/$GAMENAME-android-unsigned-unaligned.apk
+cp android/app/build/outputs/apk/debug/app-debug.apk ../output/$GAMENAME-android-armv7-unsigned-unaligned.apk
 
 popd
 
@@ -46,11 +46,11 @@ rm -rf build-android
 cd output
 
 # for some reason, this needs to be done twice; maybe there's a way to get gradle to already align the debug apk? (or maybe it's already aligned, just zipalign incompatible?)
-$ANDROID_BUILD_TOOLS/zipalign -f -v 4 ../output/$GAMENAME-android-unsigned-unaligned.apk ../output/$GAMENAME-android-unsigned-unaligned2.apk || true
-$ANDROID_BUILD_TOOLS/zipalign -f -v 4 ../output/$GAMENAME-android-unsigned-unaligned2.apk ../output/$GAMENAME-android-unsigned.apk
+$ANDROID_BUILD_TOOLS/zipalign -f -v 4 ../output/$GAMENAME-android-armv7-unsigned-unaligned.apk ../output/$GAMENAME-android-armv7-unsigned-unaligned2.apk || true
+$ANDROID_BUILD_TOOLS/zipalign -f -v 4 ../output/$GAMENAME-android-armv7-unsigned-unaligned2.apk ../output/$GAMENAME-android-armv7-unsigned.apk
 
-rm ../output/$GAMENAME-android-unsigned-unaligned.apk
-rm ../output/$GAMENAME-android-unsigned-unaligned2.apk
+rm ../output/$GAMENAME-android-armv7-unsigned-unaligned.apk
+rm ../output/$GAMENAME-android-armv7-unsigned-unaligned2.apk
 
 TMPKEYFILE=""
 KEYSTORE="$ANDROID_KEYSTORE"
@@ -66,13 +66,13 @@ if [ -z "$ANDROID_KEYSTORE" ]; then
 fi
 
 if [ -z ${ANDROID_KEYSTORE_PASSWORD} ]; then
-  $ANDROID_BUILD_TOOLS/apksigner sign --ks $KEYSTORE --out ../output/$GAMENAME-android.apk ../output/$GAMENAME-android-unsigned.apk
+  $ANDROID_BUILD_TOOLS/apksigner sign --ks $KEYSTORE --out ../output/$GAMENAME-android-armv7.apk ../output/$GAMENAME-android-armv7-unsigned.apk
 else
-  $ANDROID_BUILD_TOOLS/apksigner sign --ks $KEYSTORE --ks-pass env:ANDROID_KEYSTORE_PASSWORD --out ../output/$GAMENAME-android.apk ../output/$GAMENAME-android-unsigned.apk
+  $ANDROID_BUILD_TOOLS/apksigner sign --ks $KEYSTORE --ks-pass env:ANDROID_KEYSTORE_PASSWORD --out ../output/$GAMENAME-android-armv7.apk ../output/$GAMENAME-android-armv7-unsigned.apk
 fi
 
 if [ "$TMPKEYFILE" ]; then
   rm $TMPKEYFILE
 fi
 
-rm ../output/$GAMENAME-android-unsigned.apk
+rm ../output/$GAMENAME-android-armv7-unsigned.apk

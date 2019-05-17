@@ -14,5 +14,7 @@ set -e
 ./package_wasm.sh
 ./package_html5.sh
 ./package_steamlink.sh
+./package_raspberrypi.sh
 ./package_pocketchip.sh
+./package_switch.sh
 ./package_android_armv7.sh git

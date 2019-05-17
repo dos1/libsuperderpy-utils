@@ -45,7 +45,7 @@ elf2nro $GAMENAME $GAMENAME.nro --icon=data/icons/$GAMENAME.png
 rm $GAMENAME
 
 cd ..
-rm -rf "../../output/$GAMENAME-switch.tar.gz"
+rm -rf "../../output/$GAMENAME-switch.zip"
 zip -9r "../../output/$GAMENAME-switch.zip" "$GAMENAME"
 
 popd

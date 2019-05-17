@@ -15,7 +15,12 @@ else
   fi
 fi
 
-echo "Version code: $VERSION_CODE"
+ORIG_VERSION_CODE=$VERSION_CODE
+
+# 1 - armeabi; 2 - armeabi-v7a; 3 - arm64-v8a; 4 - mips; 5 - mips64; 6 - x86; 7 - x86_64
+VERSION_CODE=$(($VERSION_CODE + 2 * 1000000))
+
+echo "Version code: $ORIG_VERSION_CODE ($VERSION_CODE)"
 
 mkdir -p output
 

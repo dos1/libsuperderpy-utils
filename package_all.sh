@@ -5,8 +5,6 @@ if [ "$(grep SDL ../flatpak/*.json)" ]; then
   FLATPAK_SDL=1
 fi
 
-echo $FLATPAK_SDL
-
 ./package_maemo5.sh
 ./package_linux_flatpak_arm64.sh
 [ "$FLATPAK_SDL" ] && ./package_linux_flatpak_armv7.sh

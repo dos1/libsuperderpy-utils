@@ -17,8 +17,8 @@ fi
 
 ORIG_VERSION_CODE=$VERSION_CODE
 
-# 1 - armeabi; 2 - armeabi-v7a; 3 - arm64-v8a; 4 - mips; 5 - mips64; 6 - x86; 7 - x86_64
-VERSION_CODE=$(($VERSION_CODE + 2 * 1000000))
+# 0 - armeabi; 1 - armeabi-v7a; 2 - arm64-v8a; 3 - mips; 4 - mips64; 5 - x86; 6 - x86_64
+VERSION_CODE=$(($VERSION_CODE * 1000 + 1 * 10))
 
 echo "Version code: $ORIG_VERSION_CODE ($VERSION_CODE)"
 

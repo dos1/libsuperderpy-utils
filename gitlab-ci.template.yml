@@ -1,0 +1,460 @@
+stages:
+  - build
+  - deploy
+  - notify
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+.build:
+  image: docker
+  stage: build
+  retry: 1
+  services:
+    - docker:dind
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHA"
+    paths:
+      - utils/output/
+    expire_in: 300 minutes
+  cache:
+    key: $CI_JOB_NAME
+    paths:
+      - .assetcache/
+      - .flatpak-builder/
+  dependencies: []
+  variables:
+    LIBSUPERDERPY_ANDROID_KEYSTORE_BASE64: $ANDROID_KEYSTORE_BASE64
+    LIBSUPERDERPY_ANDROID_KEYSTORE_PASSWORD: $ANDROID_KEYSTORE_PASSWORD
+
+meta:
+  stage: build
+  image: debian
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHA"
+    paths:
+      - .meta/
+    expire_in: 600 minutes
+  dependencies: []
+  script:
+    - mkdir .meta
+    - cd utils
+    - build-scripts/read_cmake_var.sh LIBSUPERDERPY_GAMENAME > ../.meta/gamename
+    - build-scripts/read_cmake_var.sh LIBSUPERDERPY_GAMENAME_PRETTY > ../.meta/gamename_pretty
+    - build-scripts/read_cmake_var.sh LIBSUPERDERPY_APPID > ../.meta/appid
+
+build:win64:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_win64.sh
+
+build:win32:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_win32.sh
+
+build:html5:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_html5.sh
+
+build:wasm:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_wasm.sh
+
+build:linux-amd64:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_linux_amd64.sh
+
+build:linux-i686:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_linux_i686.sh
+
+build:linux-flatpak-amd64:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_linux_flatpak_amd64.sh
+
+build:linux-flatpak-arm64:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_linux_flatpak_arm64.sh
+
+build:linux-flatpak-armv7:
+  extends: .build
+  only:
+    variables:
+      - $ENABLE_32BIT_FLATPAK
+  script:
+    - cd utils
+    - ./package_linux_flatpak_armv7.sh
+
+build:linux-flatpak-i686:
+  extends: .build
+  only:
+    variables:
+      - $ENABLE_32BIT_FLATPAK
+  script:
+    - cd utils
+    - ./package_linux_flatpak_i686.sh
+
+build:macos:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_macos.sh
+
+build:android-armv7:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_android_armv7.sh git
+
+build:android-arm64:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_android_arm64.sh git
+
+build:steamlink:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_steamlink.sh
+
+build:pocketchip:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_pocketchip.sh
+
+build:raspberrypi:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_raspberrypi.sh
+
+build:switch:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_switch.sh
+
+build:maemo5:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_maemo5.sh
+
+.butler-deploy:
+  stage: deploy
+  image: dosowisko/butler
+  when: on_success
+  retry: 2
+  only:
+    refs:
+      - master
+    variables:
+      - $BUTLER_TARGET
+  environment:
+    name: itch-$CI_JOB_NAME
+    url: $ITCH_URL
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - butler push utils/output/`cat .meta/gamename`$DEPLOY_FILENAME_SUFFIX $BUTLER_TARGET:$DEPLOY_TARGET --userversion `echo $CI_COMMIT_SHA | cut -c1-7`
+
+deploy:itch:linux-i686:
+  extends: .butler-deploy
+  environment:
+    name: itch-linux-steamrt-i686
+  dependencies:
+    - meta
+    - build:linux-i686
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -linux-i686.tar.gz
+    DEPLOY_TARGET: ci-linux-steamrt-i686
+
+deploy:itch:linux-amd64:
+  extends: .butler-deploy
+  environment:
+    name: itch-linux-steamrt-amd64
+  dependencies:
+    - meta
+    - build:linux-amd64
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -linux-amd64.tar.gz
+    DEPLOY_TARGET: ci-linux-steamrt-amd64
+
+deploy:itch:linux-flatpak-amd64:
+  extends: .butler-deploy
+  environment:
+    name: itch-linux-flatpak-amd64
+  dependencies:
+    - meta
+    - build:linux-flatpak-amd64
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -linux-amd64.flatpak
+    DEPLOY_TARGET: ci-linux-flatpak-amd64
+
+deploy:itch:linux-flatpak-arm64:
+  extends: .butler-deploy
+  environment:
+    name: itch-linux-flatpak-arm64
+  dependencies:
+    - meta
+    - build:linux-flatpak-arm64
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -linux-arm64.flatpak
+    DEPLOY_TARGET: ci-linux-flatpak-arm64
+
+deploy:itch:linux-flatpak-armv7:
+  extends: .butler-deploy
+  only:
+    variables:
+      - $ENABLE_32BIT_FLATPAK
+  environment:
+    name: itch-linux-flatpak-armv7
+  dependencies:
+    - meta
+    - build:linux-flatpak-armv7
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -linux-armv7.flatpak
+    DEPLOY_TARGET: ci-linux-flatpak-armv7
+
+deploy:itch:linux-flatpak-i686:
+  extends: .butler-deploy
+  only:
+    variables:
+      - $ENABLE_32BIT_FLATPAK
+  environment:
+    name: itch-linux-flatpak-i686
+  dependencies:
+    - meta
+    - build:linux-flatpak-i686
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -linux-i686.flatpak
+    DEPLOY_TARGET: ci-linux-flatpak-i686
+
+deploy:itch:win32:
+  extends: .butler-deploy
+  environment:
+    name: itch-win32
+  dependencies:
+    - meta
+    - build:win32
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -win32.zip
+    DEPLOY_TARGET: ci-win32
+
+deploy:itch:win64:
+  extends: .butler-deploy
+  environment:
+    name: itch-win64
+  dependencies:
+    - meta
+    - build:win64
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -win64.zip
+    DEPLOY_TARGET: ci-win64
+
+deploy:itch:html5:
+  extends: .butler-deploy
+  environment:
+    name: itch-html5
+  dependencies:
+    - meta
+    - build:html5
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -html5.zip
+    DEPLOY_TARGET: ci-html5
+
+deploy:itch:wasm:
+  extends: .butler-deploy
+  environment:
+    name: itch-wasm
+  dependencies:
+    - meta
+    - build:wasm
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -wasm.zip
+    DEPLOY_TARGET: ci-wasm
+
+deploy:itch:macos:
+  extends: .butler-deploy
+  environment:
+    name: itch-macos
+  dependencies:
+    - meta
+    - build:macos
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -macos.zip
+    DEPLOY_TARGET: ci-macos
+
+deploy:itch:android-armv7:
+  extends: .butler-deploy
+  environment:
+    name: itch-android-armv7
+  dependencies:
+    - meta
+    - build:android-armv7
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -android-armv7.apk
+    DEPLOY_TARGET: ci-android-armv7
+
+deploy:itch:android-arm64:
+  extends: .butler-deploy
+  environment:
+    name: itch-android-arm64
+  dependencies:
+    - meta
+    - build:android-arm64
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -android-arm64.apk
+    DEPLOY_TARGET: ci-android-arm64
+
+deploy:itch:steamlink:
+  extends: .butler-deploy
+  environment:
+    name: itch-steamlink
+  dependencies:
+    - meta
+    - build:steamlink
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -steamlink.zip
+    DEPLOY_TARGET: ci-steamlink
+
+deploy:itch:pocketchip:
+  extends: .butler-deploy
+  environment:
+    name: itch-pocketchip
+  dependencies:
+    - meta
+    - build:pocketchip
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -pocketchip.zip
+    DEPLOY_TARGET: ci-pocketchip
+
+deploy:itch:raspberrypi:
+  extends: .butler-deploy
+  environment:
+    name: itch-raspberrypi
+  dependencies:
+    - meta
+    - build:raspberrypi
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -raspberrypi.zip
+    DEPLOY_TARGET: ci-raspberrypi
+
+deploy:itch:switch:
+  extends: .butler-deploy
+  environment:
+    name: itch-switch
+  dependencies:
+    - meta
+    - build:switch
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -switch.zip
+    DEPLOY_TARGET: ci-switch
+
+deploy:itch:maemo5:
+  extends: .butler-deploy
+  environment:
+    name: itch-maemo5
+  dependencies:
+    - meta
+    - build:maemo5
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -maemo5.tar.gz
+    DEPLOY_TARGET: ci-maemo5
+
+deploy:playstore:
+  stage: deploy
+  image: dosowisko/fastlane
+  when: on_success
+  retry: 2
+  only:
+    refs:
+      - master
+    variables:
+      - $PLAY_STORE_DEPLOY
+  dependencies:
+    - meta
+    - build:android-armv7
+    - build:android-arm64
+  environment:
+    name: playstore-$CI_JOB_NAME
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - fastlane supply run -p `cat .meta/appid` -a production --skip_upload_aab true --skip_upload_metadata true --skip_upload_images true --skip_upload_screenshots true -c "$PLAY_STORE_KEY" -u utils/output/`cat .meta/gamename`-android-arm64.apk,utils/output/`cat .meta/gamename`-android-armv7.apk
+
+.fdroid-deploy:
+  stage: deploy
+  image: dosowisko/curl
+  when: on_success
+  retry: 2
+  only:
+    refs:
+      - master
+    variables:
+      - $FDROID_DEPLOY
+  environment:
+    name: fdroid-$CI_JOB_NAME
+    url: $FDROID_URL
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - curl -f -F "secret=$FDROID_SECRET" -F "file=@utils/output/`cat .meta/gamename`$DEPLOY_FILENAME_SUFFIX" -F "suite=$FDROID_SUITE" $FDROID_UPLOAD_URL
+
+deploy:fdroid:android-armv7:
+  extends: .fdroid-deploy
+  environment:
+    name: fdroid-android-armv7
+  dependencies:
+    - meta
+    - build:android-armv7
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -android-armv7.apk
+
+deploy:fdroid:android-arm64:
+  extends: .fdroid-deploy
+  environment:
+    name: fdroid-android-arm64
+  dependencies:
+    - meta
+    - build:android-arm64
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -android-arm64.apk
+
+.xmpp-notify:
+  image: dosowisko/xmpp-muc-send
+  stage: notify
+  retry: 2
+  when: on_success
+  variables:
+    GIT_STRATEGY: none
+  dependencies: []
+
+notify:success:
+  extends: .xmpp-notify
+  when: on_success
+  script:
+    - 'xmpp-muc-send -j "$XMPP_JID" -n "$XMPP_NICK" -p "$XMPP_PASSWORD" -r "$XMPP_ROOM" "New builds ($CI_PROJECT_NAME): [`echo $CI_COMMIT_SHA | cut -c1-7` | $CI_COMMIT_REF_NAME] $CI_COMMIT_TITLE"'
+
+notify:failure:
+  extends: .xmpp-notify
+  when: on_failure
+  script:
+    - 'xmpp-muc-send -j "$XMPP_JID" -n "$XMPP_NICK" -p "$XMPP_PASSWORD" -r "$XMPP_ROOM" "FAILURE ($CI_PROJECT_NAME): [`echo $CI_COMMIT_SHA | cut -c1-7` | $CI_COMMIT_REF_NAME] $CI_COMMIT_TITLE $CI_PIPELINE_URL"'

@@ -443,6 +443,9 @@ deploy:fdroid:android-arm64:
   stage: notify
   retry: 2
   when: on_success
+  only:
+    variables:
+      - $XMPP_ROOM
   variables:
     GIT_STRATEGY: none
   dependencies: []

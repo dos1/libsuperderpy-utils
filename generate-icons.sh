@@ -79,6 +79,8 @@ then
   cp 64/${FILE%.*}.png ./
 fi
 
+# TODO: generate platform-specific files with CMake
+
 echo "Creating ICO..."
 icotool --create $ICOFILELIST $PNGFILELIST > ${FILE%.*}.ico
 
@@ -87,5 +89,7 @@ png2icns ${FILE%.*}.icns $MACFILELIST
 
 echo "Creating icon.rc..."
 echo "IDI_ICON1 ICON DISCARDABLE \"${FILE%.*}.ico\"" > icon.rc
+
+cp 96/$GAMENAME.png ../../logo.png
 
 echo "Done!"

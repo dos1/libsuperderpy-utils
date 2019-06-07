@@ -22,9 +22,18 @@ pushd ..
 
 GAMENAME=`build-scripts/read_cmake_var.sh LIBSUPERDERPY_GAMENAME`
 GAMENAME_PRETTY=`build-scripts/read_cmake_var.sh LIBSUPERDERPY_GAMENAME_PRETTY`
-VENDOR=`build-scripts/read_cmake_var.sh LIBSUPERDERPY_VENDOR || echo "dosowisko.net"`
-VERSION=`build-scripts/read_cmake_var.sh LIBSUPERDERPY_VERSION || echo "1.0"`
+VENDOR=`build-scripts/read_cmake_var.sh LIBSUPERDERPY_VENDOR`
+VERSION=`build-scripts/read_cmake_var.sh LIBSUPERDERPY_VERSION`
 GITREV=`cd ..; git rev-list --count HEAD`
+
+if [ -z "$VERSION" ]; then
+  VERSION="1.0"
+fi
+
+if [ -z "$VENDOR" ]; then
+  VENDOR="dosowisko.net"
+fi
+
 VERSION="$VERSION-$GITREV"
 
 popd

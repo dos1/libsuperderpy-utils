@@ -18,11 +18,16 @@ source /opt/devkitpro/switchvars.sh
 cmake -GNinja ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=/switch.toolchain
 ninja
 
-GAMENAME=`grep LIBSUPERDERPY_GAMENAME:INTERNAL CMakeCache.txt`
-GAMENAME=${GAMENAME#LIBSUPERDERPY_GAMENAME:INTERNAL=}
+pushd ..
 
-GAMENAME_PRETTY=`grep LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL CMakeCache.txt`
-GAMENAME_PRETTY=${GAMENAME_PRETTY#LIBSUPERDERPY_GAMENAME_PRETTY:INTERNAL=}
+GAMENAME=`build-scripts/read_cmake_var.sh LIBSUPERDERPY_GAMENAME`
+GAMENAME_PRETTY=`build-scripts/read_cmake_var.sh LIBSUPERDERPY_GAMENAME_PRETTY`
+VENDOR=`build-scripts/read_cmake_var.sh LIBSUPERDERPY_VENDOR || echo "dosowisko.net"`
+VERSION=`build-scripts/read_cmake_var.sh LIBSUPERDERPY_VERSION || echo "1.0"`
+GITREV=`cd ..; git rev-list --count HEAD`
+VERSION="$VERSION-$GITREV"
+
+popd
 
 mkdir rel
 cd rel
@@ -41,8 +46,10 @@ rm -rf data/.git
 rm -rf data/stuff
 rm -f data/CMakeLists.txt data/icons/CMakeLists.txt
 
-elf2nro $GAMENAME $GAMENAME.nro --icon=data/icons/$GAMENAME.png
-rm $GAMENAME
+nacptool --create "$GAMENAME_PRETTY" "$VENDOR" "$VERSION" control.nacp
+convert data/icons/256/$GAMENAME.png -quality 100 -background white -flatten icon.jpg
+elf2nro $GAMENAME $GAMENAME.nro --icon=icon.jpg --nacp=control.nacp
+rm $GAMENAME icon.jpg control.nacp
 
 cd ..
 rm -rf "../../output/$GAMENAME-switch.zip"

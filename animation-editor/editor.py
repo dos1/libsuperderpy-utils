@@ -325,8 +325,15 @@ frameModel = QStandardItemModel(ui.frameList)
 parser = argparse.ArgumentParser(description='Animation editor for libsuperderpy game engine.')
 parser.add_argument('path', type=str, nargs='?',
                     help='existing animation or directory to open')
+parser.add_argument('-a', '--add', action='store_true',
+                    help='pre-add all available images to the animation')
+parser.add_argument('-d', '--duration', metavar='ms', type=int,
+                    help='set the global frame duration in miliseconds')
+parser.add_argument('-s', '--save', metavar='path', type=str,
+                    help='pre-save the animation to the specified path')
 
 args = parser.parse_args()
+
 if args.path and isdir(args.path):
     newFile(args.path)
 elif args.path:
@@ -382,6 +389,14 @@ ui.frameList.dragStarted.connect(lambda: ui.frameList.setDragDropMode(QAbstractI
 ui.frameList.selectionModel().currentChanged.connect(lambda current, previous: ui.counter.setText((str(current.row() + 1) + '/' + str(current.model().rowCount())) if current.model() else '-/-'))
 
 ui.frameList.selectionModel().currentChanged.connect(showFrame)
+
+if args.add:
+    addAll()
+if args.duration:
+    ui.duration.setValue(args.duration)
+if args.save:
+   animFile = args.save
+   saveFile()
 
 window.show()
 app.exec_()

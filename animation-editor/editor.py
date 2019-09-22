@@ -329,6 +329,10 @@ parser.add_argument('-a', '--add', action='store_true',
                     help='pre-add all available images to the animation')
 parser.add_argument('-d', '--duration', metavar='ms', type=int,
                     help='set the global frame duration in miliseconds')
+parser.add_argument('-m', '--maximize', action='store_true',
+                    help='start maximized')
+parser.add_argument('-p', '--play', action='store_true',
+                    help='automatically start playing the animation')
 parser.add_argument('-s', '--save', metavar='path', type=str,
                     help='pre-save the animation to the specified path')
 
@@ -395,8 +399,14 @@ if args.add:
 if args.duration:
     ui.duration.setValue(args.duration)
 if args.save:
-   animFile = args.save
-   saveFile()
+    animFile = args.save
+    saveFile()
+if args.play:
+    playPause()
 
-window.show()
+if args.maximize:
+    window.showMaximized()
+else:
+    window.show()
+
 app.exec_()

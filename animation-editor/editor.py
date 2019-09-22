@@ -190,6 +190,7 @@ def readDir():
     frames = [f for f in listdir(animDir) if (isfile(join(animDir, f)) and f.lower().endswith(('.png', '.webp', '.jpg', '.bmp')))]
 
     for frame in frames:
+        print("Loading {}...".format(frame))
         item = QStandardItem(frame)
         pixmap = QPixmap(join(animDir, frame))
         item.setIcon(QIcon(pixmap))
@@ -225,6 +226,7 @@ def openFile(filename = None):
     for i in range(frames):
         section = 'frame' + str(i)
         frame = config.get(section, 'file')
+        print("Loading {}...".format(frame))
         item = QStandardItem(frame)
         pixmap = QPixmap(join(animDir, frame))
         item.setIcon(QIcon(pixmap))
@@ -250,6 +252,7 @@ def importFrames():
     for i in range(frames):
         section = 'frame' + str(i)
         frame = config.get(section, 'file')
+        print("Loading {}...".format(frame))
         item = QStandardItem(frame)
         pixmap = QPixmap(join(animDir, frame))
         item.setIcon(QIcon(pixmap))

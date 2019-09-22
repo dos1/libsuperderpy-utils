@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import argparse
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, isdir, join
 from configparser import ConfigParser
 from EditorUI import Ui_MainWindow
 
@@ -33,9 +34,9 @@ def addFrame():
         else:
             frameModel.appendRow(newItem)
         ui.frameList.setCurrentIndex(newItem.index())
-        
+
         window.setWindowModified(True)
-        
+
 def addAll():
     count = model.rowCount()
     for i in range(count):
@@ -67,7 +68,7 @@ def moveFrameRight():
     frameModel.insertRow(newRow, rows)
     ui.frameList.setCurrentIndex(rows[0].index())
     window.setWindowModified(True)
-    
+
 def duplicateFrame():
     index = ui.frameList.currentIndex()
     if index.model():
@@ -76,7 +77,7 @@ def duplicateFrame():
         frameModel.insertRow(index.row() + 1, newItem)
         ui.frameList.setCurrentIndex(newItem.index())
         window.setWindowModified(True)
-    
+
 def deleteFrame():
     frame = ui.frameList.currentIndex()
     if not frame.model():
@@ -84,11 +85,11 @@ def deleteFrame():
     frameModel.removeRow(frame.row())
     ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
     window.setWindowModified(True)
-    
+
 playing = False
 reversing = False
 timer = QTimer()
-    
+
 def nextFrame():
     global reversing
     if playing and reversing:
@@ -102,8 +103,8 @@ def nextFrame():
         item = frameModel.item(0)
         if not item:
             return
-    ui.frameList.setCurrentIndex(item.index())        
-    
+    ui.frameList.setCurrentIndex(item.index())
+
 def prevFrame():
     global reversing
     count = frameModel.rowCount()
@@ -119,12 +120,12 @@ def prevFrame():
             reversing = False
             return nextFrame()
         row = count - 1
-        
+
     item = frameModel.item(row)
     if not item:
         return
-    ui.frameList.setCurrentIndex(item.index())        
-    
+    ui.frameList.setCurrentIndex(item.index())
+
 def playPause():
     global playing
     playing = not playing
@@ -132,13 +133,13 @@ def playPause():
     ui.frameGroup2.setEnabled(not playing)
     ui.playPause.setIcon(QIcon.fromTheme("media-playback-pause" if playing else "media-playback-start"))
     ui.playPause.setText("Pause" if playing else "Play")
-    
+
     timer.setInterval(ui.duration.value())
     if playing:
         timer.start()
     else:
         timer.stop()
-        
+
 def showFrame(current, previous):
     if not current.model():
         preview.setVisible(False)
@@ -148,7 +149,7 @@ def showFrame(current, previous):
     preview.setPixmap(pixmap)
     previewScene.setSceneRect(QRectF(pixmap.rect()))
     ui.preview.fitInView(previewScene.sceneRect(), mode=Qt.KeepAspectRatio)
-        
+
 def stop():
     global playing
     playing = True
@@ -156,7 +157,7 @@ def stop():
     item = frameModel.item(0)
     if item:
         ui.frameList.setCurrentIndex(item.index())
-        
+
 def modify():
     window.setWindowModified(True)
 
@@ -195,9 +196,9 @@ def readDir():
         item.setToolTip(frame)
         item.setData(pixmap)
         item.setDropEnabled(False)
-    
+
         model.appendRow(item)
-    
+
     sort()
 
 def openFile(filename = None):
@@ -258,20 +259,23 @@ def importFrames():
         frameModel.appendRow(item)
     window.setWindowModified(True)
     ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
-        
-def newFile():
+
+def newFile(directory=None):
     global animDir, animFile
-    animDir = QFileDialog.getExistingDirectory(window, "Select a directory with animation frames.", QDir.currentPath())
-    
-    if animDir=="":
+    animDir = directory
+
+    if not animDir:
+        animDir = QFileDialog.getExistingDirectory(window, "Select a directory with animation frames.", QDir.currentPath())
+
+    if not animDir:
         return
-    
+
     readDir()
-    
+
     frameModel.clear()
-    
+
     window.setWindowFilePath("")
-    
+
     animFile = None
     ui.counter.setText('-/-')
     window.setWindowModified(False)
@@ -283,7 +287,7 @@ def newOrOpen():
         openFile()
     else:
         newFile()
-        
+
 def saveFileAs():
     global animFile
     f = QFileDialog.getSaveFileName(window, "Save animation", animDir, "libsuperderpy animation (*.ini)")
@@ -291,7 +295,7 @@ def saveFileAs():
     if f!="":
         animFile = f
         saveFile()
-    
+
 def saveFile():
     if not animFile:
         return saveFileAs()
@@ -311,11 +315,19 @@ def saveFile():
         config.write(configfile)
     window.setWindowModified(False)
     window.setWindowFilePath(animFile)
-    
+
 model = QStandardItemModel(ui.sourcesList)
 frameModel = QStandardItemModel(ui.frameList)
-if len(sys.argv) > 1:
-    openFile(sys.argv[1])
+
+parser = argparse.ArgumentParser(description='Animation editor for libsuperderpy game engine.')
+parser.add_argument('path', type=str, nargs='?',
+                    help='existing animation or directory to open')
+
+args = parser.parse_args()
+if args.path and isdir(args.path):
+    newFile(args.path)
+elif args.path:
+    openFile(args.path)
 else:
     newOrOpen()
 
@@ -323,7 +335,7 @@ previewScene = QGraphicsScene(window)
 ui.preview.setScene(previewScene)
 ui.preview.setBackgroundBrush(QBrush(QColor("grey"), Qt.Dense3Pattern))
 preview = previewScene.addPixmap(QPixmap())
-    
+
 def unreverse():
     global reversing
     reversing = False
@@ -349,13 +361,13 @@ ui.actionOpen.triggered.connect(openFile)
 ui.actionSave.triggered.connect(saveFile)
 ui.actionSave_as.triggered.connect(saveFileAs)
 ui.actionClose.triggered.connect(lambda: app.quit())
- 
+
 ui.sourcesList.itemSelected.connect(addFrame)
 ui.frameList.itemRemoved.connect(deleteFrame)
 
 frameModel.itemChanged.connect(lambda item: QTimer.singleShot(50, lambda: ui.frameList.setCurrentIndex(item.index())))
 frameModel.itemChanged.connect(modify)
- 
+
 ui.frameList.setDragDropMode(QAbstractItemView.InternalMove)
 ui.sourcesList.setDragDropMode(QAbstractItemView.DragOnly)
 ui.sourcesList.setModel(model)

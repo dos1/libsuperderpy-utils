@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'editor.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.13.1
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -90,7 +92,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addLayout(self.verticalLayout_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 899, 28))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 899, 29))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -165,6 +167,10 @@ class Ui_MainWindow(object):
         self.dockWidgetContents_3.setObjectName("dockWidgetContents_3")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.dockWidgetContents_3)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
+        self.subdirs = QtWidgets.QComboBox(self.dockWidgetContents_3)
+        self.subdirs.setFrame(True)
+        self.subdirs.setObjectName("subdirs")
+        self.verticalLayout_5.addWidget(self.subdirs)
         self.sourcesList = FrameListView(self.dockWidgetContents_3)
         self.sourcesList.setObjectName("sourcesList")
         self.verticalLayout_5.addWidget(self.sourcesList)
@@ -262,5 +268,4 @@ class Ui_MainWindow(object):
         self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
         self.actionSave_as.setText(_translate("MainWindow", "Save &as..."))
         self.actionClose.setText(_translate("MainWindow", "&Close"))
-
 from FrameListView import FrameListView

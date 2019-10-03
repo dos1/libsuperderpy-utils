@@ -6,8 +6,8 @@ import argparse
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from os import listdir
-from os.path import isfile, isdir, join
+from os import listdir, walk
+from os.path import isfile, isdir, join, relpath
 from configparser import ConfigParser
 from EditorUI import Ui_MainWindow
 
@@ -200,9 +200,16 @@ window.setWindowTitle("")
 animDir = None
 animFile = None
 
-def readDir():
+def readDir(override=None):
     model.clear()
-    frames = [f for f in listdir(animDir) if (isfile(join(animDir, f)) and f.lower().endswith(('.png', '.webp', '.jpg', '.bmp')))]
+    p = animDir
+    if override:
+        p = override
+    frames = [f for f in listdir(p) if (isfile(join(p, f)) and f.lower().endswith(('.png', '.webp', '.jpg', '.bmp')))]
+    if not override:
+        subdirs = list(dict.fromkeys([dp for dp, dn, fn in walk(p) for f in fn]))
+        ui.subdirs.clear()
+        ui.subdirs.addItems(subdirs)
 
     dialog = Progress(window, "Reading working directory")
     dialog.setMax(len(frames))
@@ -212,11 +219,11 @@ def readDir():
         print("Loading {}...".format(frame))
         dialog.setValue(i)
         item = QStandardItem(frame)
-        pixmap = QPixmap(join(animDir, frame))
+        pixmap = QPixmap(join(p, frame))
         if pixmap.width() > 1280:
             pixmap = pixmap.scaledToWidth(1280)
         item.setIcon(QIcon(pixmap))
-        item.setToolTip(frame)
+        item.setToolTip(relpath(join(p,frame), animDir))
         item.setData(pixmap)
         item.setDropEnabled(False)
 
@@ -353,7 +360,7 @@ def saveFile():
     for i in range(frameModel.rowCount()):
         section = 'frame' + str(i)
         config.add_section(section)
-        config.set(section, 'file', frameModel.item(i).text())
+        config.set(section, 'file', frameModel.item(i).toolTip())
 
     with open(animFile, 'w') as configfile:
         config.write(configfile)
@@ -416,6 +423,7 @@ ui.actionOpen.triggered.connect(openFile)
 ui.actionSave.triggered.connect(saveFile)
 ui.actionSave_as.triggered.connect(saveFileAs)
 ui.actionClose.triggered.connect(lambda: app.quit())
+ui.subdirs.currentTextChanged.connect(readDir)
 
 ui.sourcesList.itemSelected.connect(addFrame)
 ui.frameList.itemRemoved.connect(deleteFrame)

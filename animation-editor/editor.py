@@ -213,6 +213,8 @@ def readDir():
         dialog.setValue(i)
         item = QStandardItem(frame)
         pixmap = QPixmap(join(animDir, frame))
+        if pixmap.width() > 1280:
+            pixmap = pixmap.scaledToWidth(1280)
         item.setIcon(QIcon(pixmap))
         item.setToolTip(frame)
         item.setData(pixmap)
@@ -256,6 +258,8 @@ def openFile(filename = None):
         dialog.setValue(i)
         item = QStandardItem(frame)
         pixmap = QPixmap(join(animDir, frame))
+        if pixmap.width() > 1280:
+            pixmap = pixmap.scaledToWidth(1280)
         item.setIcon(QIcon(pixmap))
         item.setToolTip(frame)
         item.setData(pixmap)
@@ -288,6 +292,8 @@ def importFrames():
         dialog.setValue(i)
         item = QStandardItem(frame)
         pixmap = QPixmap(join(animDir, frame))
+        if pixmap.width() > 1280:
+            pixmap = pixmap.scaledToWidth(1280)
         item.setIcon(QIcon(pixmap))
         item.setToolTip(frame)
         item.setData(pixmap)

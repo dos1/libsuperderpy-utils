@@ -16,6 +16,21 @@ app.setApplicationDisplayName("libsuperderpy animation editor")
 
 order=Qt.DescendingOrder
 
+class Progress(QDialog):
+    def __init__(self, parent, title='Loading'):
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self.setModal(True)
+        self.progress = QProgressBar(self)
+        self.progress.setGeometry(0, 0, 500, 25)
+        self.progress.setMaximum(100)
+
+    def setMax(self, val):
+        self.progress.setMaximum(val)
+
+    def setValue(self, val):
+        self.progress.setValue(val)
+
 def sort():
     global order, model
     if order==Qt.DescendingOrder:
@@ -189,8 +204,13 @@ def readDir():
     model.clear()
     frames = [f for f in listdir(animDir) if (isfile(join(animDir, f)) and f.lower().endswith(('.png', '.webp', '.jpg', '.bmp')))]
 
+    dialog = Progress(window, "Reading working directory")
+    dialog.setMax(len(frames))
+    dialog.show()
+    i = 0
     for frame in frames:
         print("Loading {}...".format(frame))
+        dialog.setValue(i)
         item = QStandardItem(frame)
         pixmap = QPixmap(join(animDir, frame))
         item.setIcon(QIcon(pixmap))
@@ -199,8 +219,11 @@ def readDir():
         item.setDropEnabled(False)
 
         model.appendRow(item)
+        app.processEvents()
+        i = i+1
 
     sort()
+    dialog.hide()
 
 def openFile(filename = None):
     global animFile, animDir
@@ -223,10 +246,14 @@ def openFile(filename = None):
     ui.reversible.setChecked(config.getboolean('animation', 'bidir', fallback=False))
     ui.duration.setValue(config.getint('animation', 'duration', fallback=100))
     frames = config.getint('animation', 'frames')
+    dialog = Progress(window, "Loading animation frames")
+    dialog.setMax(frames)
+    dialog.show()
     for i in range(frames):
         section = 'frame' + str(i)
         frame = config.get(section, 'file')
         print("Loading {}...".format(frame))
+        dialog.setValue(i)
         item = QStandardItem(frame)
         pixmap = QPixmap(join(animDir, frame))
         item.setIcon(QIcon(pixmap))
@@ -234,6 +261,8 @@ def openFile(filename = None):
         item.setData(pixmap)
         item.setDropEnabled(False)
         frameModel.appendRow(item)
+        app.processEvents()
+    dialog.hide()
     readDir()
     window.setWindowFilePath(animFile)
     window.setWindowModified(False)
@@ -249,10 +278,14 @@ def importFrames():
     config = ConfigParser()
     config.read(filename)
     frames = config.getint('animation', 'frames')
+    dialog = Progress(window, "Importing animation frames")
+    dialog.setMax(frames)
+    dialog.show()
     for i in range(frames):
         section = 'frame' + str(i)
         frame = config.get(section, 'file')
         print("Loading {}...".format(frame))
+        dialog.setValue(i)
         item = QStandardItem(frame)
         pixmap = QPixmap(join(animDir, frame))
         item.setIcon(QIcon(pixmap))
@@ -260,6 +293,8 @@ def importFrames():
         item.setData(pixmap)
         item.setDropEnabled(False)
         frameModel.appendRow(item)
+        app.processEvents()
+    dialog.hide()
     window.setWindowModified(True)
     ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
 

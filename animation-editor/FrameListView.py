@@ -34,7 +34,11 @@ class FrameListView(QListView):
     def startDrag(self, *args, **kwargs):
         self.dragStarted.emit()
         super(FrameListView, self).startDrag(*args, **kwargs)
-        
+
+    def dropEvent(self, *args, **kwargs):
+        if self.acceptDrops():
+            super(FrameListView, self).dropEvent(*args, **kwargs)
+
     def resizeEvent(self, event):
         size = event.size().height() - 16
         if size > 192:

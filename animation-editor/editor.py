@@ -40,17 +40,24 @@ def sort():
     model.sort(0, order=order)
 
 def addFrame():
-    index = ui.sourcesList.currentIndex()
-    if index.model():
-        item = index.model().itemFromIndex(index)
-        newItem = QStandardItem(item)
-        if ui.frameList.currentIndex().model():
-            frameModel.insertRow(ui.frameList.currentIndex().row() + 1, newItem)
-        else:
-            frameModel.appendRow(newItem)
-        ui.frameList.setCurrentIndex(newItem.index())
+    frames = ui.sourcesList.selectedIndexes()
+    frames.sort(key=lambda frame: frame.row())
+    ui.frameList.clearSelection()
+    toselect = []
+    for index in frames:
+        if index.model():
+            item = index.model().itemFromIndex(index)
+            newItem = QStandardItem(item)
+            if ui.frameList.currentIndex().model():
+                frameModel.insertRow(ui.frameList.currentIndex().row() + 1, newItem)
+            else:
+                frameModel.appendRow(newItem)
+            toselect.append(newItem)
+            ui.frameList.setCurrentIndex(newItem.index())
+    for frame in toselect:
+        ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
 
-        window.setWindowModified(True)
+    window.setWindowModified(True)
 
 def addAll():
     count = model.rowCount()
@@ -61,27 +68,43 @@ def addAll():
         window.setWindowModified(True)
 
 def moveFrameLeft():
-    frame = ui.frameList.currentIndex()
-    if not frame.model():
-        return
-    newRow = frame.row() - 1
-    if newRow < 0:
-        return
-    rows = frameModel.takeRow(frame.row())
-    frameModel.insertRow(newRow, rows)
-    ui.frameList.setCurrentIndex(rows[0].index())
+    frames = ui.frameList.selectedIndexes()
+    frames.sort(key=lambda frame: frame.row())
+    ui.frameList.clearSelection()
+    toselect = []
+    for frame in frames:
+        if not frame.model():
+            continue
+        newRow = frame.row() - 1
+        if newRow < 0:
+            continue
+        rows = frameModel.takeRow(frame.row())
+        frameModel.insertRow(newRow, rows)
+        toselect.append(rows[0])
+        ui.frameList.setCurrentIndex(rows[0].index())
+    for frame in toselect:
+        ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
     window.setWindowModified(True)
 
 def moveFrameRight():
-    frame = ui.frameList.currentIndex()
-    if not frame.model():
-        return
-    newRow = frame.row() + 1
-    if newRow >= frameModel.rowCount():
-        return
-    rows = frameModel.takeRow(frame.row())
-    frameModel.insertRow(newRow, rows)
-    ui.frameList.setCurrentIndex(rows[0].index())
+    frames = ui.frameList.selectedIndexes()
+    frames.sort(key=lambda frame: frame.row())
+    frames.reverse()
+    ui.frameList.clearSelection()
+    toselect = []
+    for frame in frames:
+        if not frame.model():
+            continue
+        newRow = frame.row() + 1
+        if newRow >= frameModel.rowCount():
+            continue
+        rows = frameModel.takeRow(frame.row())
+        frameModel.insertRow(newRow, rows)
+        toselect.append(rows[0])
+        ui.frameList.setCurrentIndex(rows[0].index())
+    toselect.reverse()
+    for frame in toselect:
+        ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
     window.setWindowModified(True)
 
 def duplicateFrame():

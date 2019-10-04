@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from os import listdir, walk
-from os.path import isfile, isdir, join, relpath
+from os.path import isfile, isdir, join, relpath, basename
 from configparser import ConfigParser
 from EditorUI import Ui_MainWindow
 
@@ -263,7 +263,7 @@ def openFile(filename = None):
         frame = config.get(section, 'file')
         print("Loading {}...".format(frame))
         dialog.setValue(i)
-        item = QStandardItem(frame)
+        item = QStandardItem(basename(frame))
         pixmap = QPixmap(join(animDir, frame))
         if pixmap.width() > 1280:
             pixmap = pixmap.scaledToWidth(1280)
@@ -286,6 +286,10 @@ def importFrames():
     if filename=="":
         return
 
+    d = QDir(relpath(filename, animDir))
+    d.cdUp()
+    path = d.path()
+
     config = ConfigParser()
     config.read(filename)
     frames = config.getint('animation', 'frames')
@@ -297,12 +301,12 @@ def importFrames():
         frame = config.get(section, 'file')
         print("Loading {}...".format(frame))
         dialog.setValue(i)
-        item = QStandardItem(frame)
-        pixmap = QPixmap(join(animDir, frame))
+        item = QStandardItem(basename(frame))
+        pixmap = QPixmap(join(join(animDir, path), frame))
         if pixmap.width() > 1280:
             pixmap = pixmap.scaledToWidth(1280)
         item.setIcon(QIcon(pixmap))
-        item.setToolTip(frame)
+        item.setToolTip(relpath(join(path, frame), animDir))
         item.setData(pixmap)
         item.setDropEnabled(False)
         frameModel.appendRow(item)

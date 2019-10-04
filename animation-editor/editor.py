@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from os import listdir, walk
-from os.path import isfile, isdir, join, relpath, basename
+from os.path import isfile, isdir, join, relpath, abspath, basename
 from configparser import ConfigParser
 from EditorUI import Ui_MainWindow
 
@@ -223,7 +223,13 @@ window.setWindowTitle("")
 animDir = None
 animFile = None
 
+overrideLock = False
+
 def readDir(override=None):
+    global overrideLock
+    if overrideLock:
+        return
+    overrideLock = True
     model.clear()
     p = animDir
     if override:
@@ -233,6 +239,7 @@ def readDir(override=None):
         subdirs = list(dict.fromkeys([dp for dp, dn, fn in walk(p) for f in fn]))
         ui.subdirs.clear()
         ui.subdirs.addItems(subdirs)
+    overrideLock = False
 
     dialog = Progress(window, "Reading working directory")
     dialog.setMax(len(frames))
@@ -269,7 +276,10 @@ def openFile(filename = None):
         return
     d = QDir(animFile)
     d.cdUp()
-    animDir = d.path()
+    newDir = False
+    if not animDir or abspath(animDir) != abspath(d.path()):
+        newDir = True
+        animDir = d.path()
 
     frameModel.clear()
 
@@ -297,7 +307,8 @@ def openFile(filename = None):
         frameModel.appendRow(item)
         app.processEvents()
     dialog.hide()
-    readDir()
+    if newDir:
+        readDir()
     window.setWindowFilePath(animFile)
     window.setWindowModified(False)
 

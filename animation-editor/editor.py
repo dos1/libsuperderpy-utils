@@ -132,6 +132,7 @@ def deleteFrame():
         frameModel.removeRow(frame.row())
         ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
         window.setWindowModified(True)
+    ui.frameList.selectionModel().select(ui.frameList.currentIndex(), QItemSelectionModel.Select)
 
 playing = False
 reversing = False

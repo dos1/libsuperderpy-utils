@@ -54,10 +54,9 @@ def addFrame():
                 frameModel.appendRow(newItem)
             toselect.append(newItem)
             ui.frameList.setCurrentIndex(newItem.index())
+            window.setWindowModified(True)
     for frame in toselect:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
-
-    window.setWindowModified(True)
 
 def addAll():
     count = model.rowCount()
@@ -82,9 +81,9 @@ def moveFrameLeft():
         frameModel.insertRow(newRow, rows)
         toselect.append(rows[0])
         ui.frameList.setCurrentIndex(rows[0].index())
+        window.setWindowModified(True)
     for frame in toselect:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
-    window.setWindowModified(True)
 
 def moveFrameRight():
     frames = ui.frameList.selectedIndexes()
@@ -102,27 +101,37 @@ def moveFrameRight():
         frameModel.insertRow(newRow, rows)
         toselect.append(rows[0])
         ui.frameList.setCurrentIndex(rows[0].index())
+        window.setWindowModified(True)
     toselect.reverse()
     for frame in toselect:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
-    window.setWindowModified(True)
 
 def duplicateFrame():
-    index = ui.frameList.currentIndex()
-    if index.model():
-        item = index.model().itemFromIndex(index)
-        newItem = QStandardItem(item)
-        frameModel.insertRow(index.row() + 1, newItem)
-        ui.frameList.setCurrentIndex(newItem.index())
-        window.setWindowModified(True)
+    frames = ui.frameList.selectedIndexes()
+    frames.sort(key=lambda frame: frame.row())
+    frames.reverse()
+    toselect = []
+    for index in frames:
+        if index.model():
+            item = index.model().itemFromIndex(index)
+            newItem = QStandardItem(item)
+            frameModel.insertRow(frames[0].row() + 1, newItem)
+            toselect.append(newItem)
+            ui.frameList.setCurrentIndex(newItem.index())
+            window.setWindowModified(True)
+    for frame in toselect:
+        ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
 
 def deleteFrame():
-    frame = ui.frameList.currentIndex()
-    if not frame.model():
-        return
-    frameModel.removeRow(frame.row())
-    ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
-    window.setWindowModified(True)
+    frames = ui.frameList.selectedIndexes()
+    frames.sort(key=lambda frame: frame.row())
+    frames.reverse()
+    for frame in frames:
+        if not frame.model():
+            return
+        frameModel.removeRow(frame.row())
+        ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
+        window.setWindowModified(True)
 
 playing = False
 reversing = False

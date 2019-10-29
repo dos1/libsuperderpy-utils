@@ -122,6 +122,33 @@ def duplicateFrame():
     for frame in toselect:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
 
+def splitFrames():
+    frames = ui.frameList.selectedIndexes()
+    frames.sort(key=lambda frame: frame.row())
+    frames.reverse()
+
+    f = QFileDialog.getSaveFileName(window, "Split animation", animDir, "libsuperderpy animation (*.ini)")
+    f = f[0]
+
+    config = ConfigParser()
+    #config.read(animFile)
+    config.add_section('animation')
+    config.set('animation', 'duration', str(ui.duration.value()))
+    if ui.reversible.isChecked():
+        config.set('animation', 'bidir', '1')
+    i = 0
+    for index in frames:
+        if index.model():
+            item = index.model().itemFromIndex(index)
+            section = 'frame' + str(i)
+            config.add_section(section)
+            config.set(section, 'file', item.toolTip())
+            i = i + 1
+    config.set('animation', 'frames', str(i))
+
+    with open(f, 'w') as configfile:
+        config.write(configfile)
+
 def deleteFrame():
     frames = ui.frameList.selectedIndexes()
     frames.sort(key=lambda frame: frame.row())
@@ -456,6 +483,7 @@ ui.addAll.pressed.connect(addAll)
 ui.moveLeft.pressed.connect(moveFrameLeft)
 ui.moveRight.pressed.connect(moveFrameRight)
 ui.importBtn.pressed.connect(importFrames)
+ui.splitBtn.pressed.connect(splitFrames)
 ui.copy.pressed.connect(duplicateFrame)
 ui.deleteBtn.pressed.connect(deleteFrame)
 ui.playPause.pressed.connect(playPause)

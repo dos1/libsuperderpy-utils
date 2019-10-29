@@ -162,6 +162,19 @@
              </widget>
             </item>
             <item>
+             <widget class="QToolButton" name="splitBtn">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>Split</string>
+              </property>
+              <property name="icon">
+               <iconset theme="split"/>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QToolButton" name="importBtn">
               <property name="text">
                <string>Import</string>

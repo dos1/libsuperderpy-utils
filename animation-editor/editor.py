@@ -122,6 +122,24 @@ def duplicateFrame():
     for frame in toselect:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
 
+def reverseFrames():
+    frames = ui.frameList.selectedIndexes()
+    frames.sort(key=lambda frame: frame.row())
+    frames.reverse()
+    for i in range(len(frames) // 2):
+        frame = frames[i]
+        frame2 = frames[len(frames) - i - 1]
+        row = frame.row()
+        row2 = frame2.row()
+        rows = frameModel.takeRow(row)
+        rows2 = frameModel.takeRow(row2)
+        frameModel.insertRow(row2, rows)
+        frameModel.insertRow(row, rows2)
+        window.setWindowModified(True)
+    ui.frameList.selectionModel().clearSelection()
+    for frame in frames:
+        ui.frameList.selectionModel().select(frame, QItemSelectionModel.Select)
+
 def splitFrames():
     frames = ui.frameList.selectedIndexes()
     frames.sort(key=lambda frame: frame.row())
@@ -483,6 +501,7 @@ ui.addAll.pressed.connect(addAll)
 ui.moveLeft.pressed.connect(moveFrameLeft)
 ui.moveRight.pressed.connect(moveFrameRight)
 ui.importBtn.pressed.connect(importFrames)
+ui.reverseBtn.pressed.connect(reverseFrames)
 ui.splitBtn.pressed.connect(splitFrames)
 ui.copy.pressed.connect(duplicateFrame)
 ui.deleteBtn.pressed.connect(deleteFrame)

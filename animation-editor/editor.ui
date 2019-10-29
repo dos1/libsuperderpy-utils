@@ -162,6 +162,16 @@
              </widget>
             </item>
             <item>
+             <widget class="QToolButton" name="reverseBtn">
+              <property name="text">
+               <string>Reverse</string>
+              </property>
+              <property name="icon">
+               <iconset theme="reverse"/>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QToolButton" name="splitBtn">
               <property name="enabled">
                <bool>true</bool>

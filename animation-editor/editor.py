@@ -143,7 +143,6 @@ def reverseFrames():
 def splitFrames():
     frames = ui.frameList.selectedIndexes()
     frames.sort(key=lambda frame: frame.row())
-    frames.reverse()
 
     f = QFileDialog.getSaveFileName(window, "Split animation", animDir, "libsuperderpy animation (*.ini)")
     f = f[0]

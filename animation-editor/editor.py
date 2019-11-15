@@ -275,6 +275,19 @@ def modify():
 timer.timeout.connect(nextFrame)
 
 class MainWindow(QMainWindow):
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls:
+            event.accept()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        if event.mimeData().urls():
+            url = event.mimeData().urls()[0].toLocalFile()
+            if url.lower()[-4:] == '.ini':
+                openFile(url)
+
     def closeEvent(self, event):
         if self.isWindowModified():
             val = QMessageBox.warning(self, animFile, "The animation has been changed. Do you want to save it?", QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
@@ -292,6 +305,8 @@ window = MainWindow()
 ui = Ui_MainWindow()
 ui.setupUi(window)
 window.setWindowTitle("")
+
+window.setAcceptDrops(True)
 
 animDir = None
 animFile = None

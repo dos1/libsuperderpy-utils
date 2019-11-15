@@ -24,12 +24,13 @@ class FrameCache:
         self.thumbnails = {}
 
     def load(self, img):
-        if self.cache.get(img):
-            return self.cache[img]
-        pixmap = QPixmap(img)
+        path = abspath(img)
+        if self.cache.get(path):
+            return self.cache[path]
+        pixmap = QPixmap(path)
         if pixmap.width() > 1280:
             pixmap = pixmap.scaledToWidth(1280)
-        self.cache[img] = pixmap
+        self.cache[path] = pixmap
         return pixmap
 
 cache = FrameCache()

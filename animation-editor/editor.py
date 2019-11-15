@@ -16,6 +16,24 @@ app.setApplicationDisplayName("libsuperderpy animation editor")
 
 order=Qt.DescendingOrder
 
+class FrameCache:
+    cache = None
+
+    def __init__(self):
+        self.cache = {}
+        self.thumbnails = {}
+
+    def load(self, img):
+        if self.cache.get(img):
+            return self.cache[img]
+        pixmap = QPixmap(img)
+        if pixmap.width() > 1280:
+            pixmap = pixmap.scaledToWidth(1280)
+        self.cache[img] = pixmap
+        return pixmap
+
+cache = FrameCache()
+
 class Progress(QDialog):
     def __init__(self, parent, title='Loading'):
         super().__init__(parent)
@@ -303,9 +321,7 @@ def readDir(override=None):
         print("Loading {}...".format(frame))
         dialog.setValue(i)
         item = QStandardItem(frame)
-        pixmap = QPixmap(join(p, frame))
-        if pixmap.width() > 1280:
-            pixmap = pixmap.scaledToWidth(1280)
+        pixmap = cache.load(join(p, frame))
         item.setIcon(QIcon(pixmap))
         item.setToolTip(relpath(join(p,frame), animDir))
         item.setData(pixmap)
@@ -351,9 +367,7 @@ def openFile(filename = None):
         print("Loading {}...".format(frame))
         dialog.setValue(i)
         item = QStandardItem(basename(frame))
-        pixmap = QPixmap(join(animDir, frame))
-        if pixmap.width() > 1280:
-            pixmap = pixmap.scaledToWidth(1280)
+        pixmap = cache.load(join(animDir, frame))
         item.setIcon(QIcon(pixmap))
         item.setToolTip(frame)
         item.setData(pixmap)
@@ -390,9 +404,7 @@ def importFrames():
         print("Loading {}...".format(frame))
         dialog.setValue(i)
         item = QStandardItem(basename(frame))
-        pixmap = QPixmap(join(join(animDir, path), frame))
-        if pixmap.width() > 1280:
-            pixmap = pixmap.scaledToWidth(1280)
+        pixmap = cache.load(join(join(animDir, path), frame))
         item.setIcon(QIcon(pixmap))
         item.setToolTip(relpath(join(path, frame), animDir))
         item.setData(pixmap)

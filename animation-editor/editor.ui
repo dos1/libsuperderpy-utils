@@ -167,7 +167,8 @@
                <string>Reverse</string>
               </property>
               <property name="icon">
-               <iconset theme="reverse"/>
+               <iconset theme="reverse">
+                <normaloff>.</normaloff>.</iconset>
               </property>
              </widget>
             </item>
@@ -180,7 +181,8 @@
                <string>Split</string>
               </property>
               <property name="icon">
-               <iconset theme="split"/>
+               <iconset theme="split">
+                <normaloff>.</normaloff>.</iconset>
               </property>
              </widget>
             </item>
@@ -245,7 +247,15 @@
     <addaction name="separator"/>
     <addaction name="actionClose"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_2">
    <property name="floating">
@@ -561,6 +571,29 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
+  <action name="actionUndo">
+   <property name="icon">
+    <iconset theme="edit-undo">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="icon">
+    <iconset theme="edit-redo">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
   </action>
  </widget>
  <customwidgets>

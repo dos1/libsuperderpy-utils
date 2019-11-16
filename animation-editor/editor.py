@@ -16,6 +16,64 @@ app.setApplicationDisplayName("libsuperderpy animation editor")
 
 order=Qt.DescendingOrder
 
+class StateManager:
+    state = None
+    history = None
+    redo = None
+    stored = None
+    comparator = None
+    callback = None
+
+    def __init__(self, comparator, callback = None):
+        self.history = []
+        self.redo = []
+        self.comparator = comparator
+        self.callback = callback
+
+    def pushState(self, state):
+        if self.comparator(self.state, state):
+            self.state = state # for selection
+            return
+        if self.state:
+            self.history.append(self.state)
+        self.state = state
+        self.redo = []
+        if self.callback:
+            self.callback(self.isStored())
+
+    def undoState(self):
+        if len(self.history) == 0:
+            return
+        self.redo.append(self.state)
+        self.state = self.history.pop()
+        if self.callback:
+            self.callback(self.isStored())
+        return self.state
+
+    def redoState(self):
+        if len(self.redo) == 0:
+            return
+        if self.state:
+            self.history.append(self.state)
+        self.state = self.redo.pop()
+        if self.callback:
+            self.callback(self.isStored())
+        return self.state
+
+    def clearState(self):
+        self.stored = None
+        self.state = None
+        self.history = []
+        self.redo = []
+
+    def markAsStored(self):
+        self.stored = self.state
+        if self.callback:
+            self.callback(self.isStored())
+
+    def isStored(self):
+        return self.comparator(self.stored, self.state)
+
 class FrameCache:
     cache = None
 
@@ -58,7 +116,57 @@ def sort():
         order=Qt.DescendingOrder
     model.sort(0, order=order)
 
+class State(list):
+    selection = None
+
+def getState():
+    items = State()
+    for i in range(frameModel.rowCount()):
+        items.append(QStandardItem(frameModel.item(i)))
+    items.selection = [index.row() for index in ui.frameList.selectedIndexes()]
+    return items
+
+def compareState(a, b):
+    if a == b:
+        return True
+
+    if not a or not b:
+        return False
+
+    if len(a) != len(b):
+        return False
+
+    for i in range(len(a)):
+        if a[i].toolTip() != b[i].toolTip():
+            return False
+
+    return True
+
+def stateChanged(modified):
+    window.setWindowModified(not modified)
+
+state = StateManager(compareState, stateChanged)
+
+def applyState(state):
+    if state:
+        frameModel.clear()
+        for item in state:
+            frameModel.appendRow(QStandardItem(item))
+
+        ui.frameList.clearSelection()
+        for i in state.selection:
+            ui.frameList.selectionModel().select(frameModel.item(i).index(), QItemSelectionModel.Select)
+
+def undoState():
+    newState = state.undoState()
+    applyState(newState)
+
+def redoState():
+    newState = state.redoState()
+    applyState(newState)
+
 def addFrame():
+    state.pushState(getState()) # update selection
     frames = ui.sourcesList.selectedIndexes()
     frames.sort(key=lambda frame: frame.row())
     ui.frameList.clearSelection()
@@ -73,19 +181,20 @@ def addFrame():
                 frameModel.appendRow(newItem)
             toselect.append(newItem)
             ui.frameList.setCurrentIndex(newItem.index())
-            window.setWindowModified(True)
     for frame in toselect:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
+    state.pushState(getState())
 
 def addAll():
+    state.pushState(getState()) # update selection
     count = model.rowCount()
     for i in range(count):
         item = model.item(i)
         frameModel.appendRow(QStandardItem(item))
-    if count > 0:
-        window.setWindowModified(True)
+    state.pushState(getState())
 
 def moveFrameLeft():
+    state.pushState(getState()) # update selection
     frames = ui.frameList.selectedIndexes()
     frames.sort(key=lambda frame: frame.row())
     ui.frameList.clearSelection()
@@ -100,11 +209,12 @@ def moveFrameLeft():
         frameModel.insertRow(newRow, rows)
         toselect.append(rows[0])
         ui.frameList.setCurrentIndex(rows[0].index())
-        window.setWindowModified(True)
     for frame in toselect:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
+    state.pushState(getState())
 
 def moveFrameRight():
+    state.pushState(getState()) # update selection
     frames = ui.frameList.selectedIndexes()
     frames.sort(key=lambda frame: frame.row())
     frames.reverse()
@@ -120,12 +230,13 @@ def moveFrameRight():
         frameModel.insertRow(newRow, rows)
         toselect.append(rows[0])
         ui.frameList.setCurrentIndex(rows[0].index())
-        window.setWindowModified(True)
     toselect.reverse()
     for frame in toselect:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
+    state.pushState(getState())
 
 def duplicateFrame():
+    state.pushState(getState()) # update selection
     frames = ui.frameList.selectedIndexes()
     frames.sort(key=lambda frame: frame.row())
     frames.reverse()
@@ -137,11 +248,12 @@ def duplicateFrame():
             frameModel.insertRow(frames[0].row() + 1, newItem)
             toselect.append(newItem)
             ui.frameList.setCurrentIndex(newItem.index())
-            window.setWindowModified(True)
     for frame in toselect:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
+    state.pushState(getState())
 
 def reverseFrames():
+    state.pushState(getState()) # update selection
     frames = ui.frameList.selectedIndexes()
     frames.sort(key=lambda frame: frame.row())
     frames.reverse()
@@ -154,10 +266,10 @@ def reverseFrames():
         rows2 = frameModel.takeRow(row2)
         frameModel.insertRow(row2, rows)
         frameModel.insertRow(row, rows2)
-        window.setWindowModified(True)
     ui.frameList.selectionModel().clearSelection()
     for frame in frames:
         ui.frameList.selectionModel().select(frame, QItemSelectionModel.Select)
+    state.pushState(getState())
 
 def splitFrames():
     frames = ui.frameList.selectedIndexes()
@@ -186,6 +298,7 @@ def splitFrames():
         config.write(configfile)
 
 def deleteFrame():
+    state.pushState(getState()) # update selection
     frames = ui.frameList.selectedIndexes()
     frames.sort(key=lambda frame: frame.row())
     frames.reverse()
@@ -194,8 +307,8 @@ def deleteFrame():
             return
         frameModel.removeRow(frame.row())
         ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
-        window.setWindowModified(True)
     ui.frameList.selectionModel().select(ui.frameList.currentIndex(), QItemSelectionModel.Select)
+    state.pushState(getState())
 
 playing = False
 reversing = False
@@ -395,9 +508,13 @@ def openFile(filename = None):
         readDir()
     window.setWindowFilePath(animFile)
     window.setWindowModified(False)
+    state.clearState()
+    state.pushState(getState())
+    state.markAsStored()
 
 
 def importFrames():
+    state.pushState(getState()) # update selection
     filename = QFileDialog.getOpenFileName(window, "Select an animation to import...", animDir, "libsuperderpy animation (*.ini)")
     filename = filename[0]
 
@@ -430,6 +547,7 @@ def importFrames():
     dialog.hide()
     window.setWindowModified(True)
     ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
+    state.pushState(getState())
 
 def newFile(directory=None):
     global animDir, animFile
@@ -449,7 +567,7 @@ def newFile(directory=None):
 
     animFile = None
     ui.counter.setText('-/-')
-    window.setWindowModified(False)
+    state.clearState()
 
 
 def newOrOpen():
@@ -484,7 +602,8 @@ def saveFile():
 
     with open(animFile, 'w') as configfile:
         config.write(configfile)
-    window.setWindowModified(False)
+
+    state.markAsStored()
     window.setWindowFilePath(animFile)
 
 model = QStandardItemModel(ui.sourcesList)
@@ -545,6 +664,8 @@ ui.actionOpen.triggered.connect(openFile)
 ui.actionSave.triggered.connect(saveFile)
 ui.actionSave_as.triggered.connect(saveFileAs)
 ui.actionClose.triggered.connect(lambda: app.quit())
+ui.actionUndo.triggered.connect(undoState)
+ui.actionRedo.triggered.connect(redoState)
 ui.subdirs.currentTextChanged.connect(readDir)
 
 ui.sourcesList.itemSelected.connect(addFrame)

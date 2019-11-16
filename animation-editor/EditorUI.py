@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'editor.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.1
+# Created by: PyQt5 UI code generator 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -289,5 +289,7 @@ class Ui_MainWindow(object):
         self.actionSave.setText(_translate("MainWindow", "&Save"))
         self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
         self.actionSave_as.setText(_translate("MainWindow", "Save &as..."))
+        self.actionSave_as.setShortcut(_translate("MainWindow", "Ctrl+Shift+S"))
         self.actionClose.setText(_translate("MainWindow", "&Close"))
+        self.actionClose.setShortcut(_translate("MainWindow", "Ctrl+Q"))
 from FrameListView import FrameListView

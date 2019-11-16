@@ -265,7 +265,7 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>P&amp;review</string>
+    <string>Preview</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -394,7 +394,7 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>S&amp;ources</string>
+    <string>Sources</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>4</number>

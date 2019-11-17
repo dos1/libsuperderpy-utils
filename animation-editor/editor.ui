@@ -121,10 +121,16 @@
                <iconset theme="document-import">
                 <normaloff>.</normaloff>.</iconset>
               </property>
+              <property name="toolButtonStyle">
+               <enum>Qt::ToolButtonIconOnly</enum>
+              </property>
+              <property name="autoRaise">
+               <bool>false</bool>
+              </property>
              </widget>
             </item>
             <item>
-             <widget class="QToolButton" name="splitBtn">
+             <widget class="QToolButton" name="exportBtn">
               <property name="enabled">
                <bool>true</bool>
               </property>

@@ -299,12 +299,14 @@ def reverseFrames():
         ui.frameList.selectionModel().select(frame, QItemSelectionModel.Select)
     state.pushState(getState())
 
-def splitFrames():
+def exportFrames():
     frames = ui.frameList.selectedIndexes()
     frames.sort(key=lambda frame: frame.row())
 
     f = QFileDialog.getSaveFileName(window, "Export selected frames", animDir, "libsuperderpy animation (*.ini)")
     f = f[0]
+    if f=="":
+        return
 
     config = ConfigParser()
     #config.read(animFile)
@@ -676,7 +678,7 @@ ui.moveLeft.pressed.connect(moveFrameLeft)
 ui.moveRight.pressed.connect(moveFrameRight)
 ui.importBtn.pressed.connect(importFrames)
 ui.reverseBtn.pressed.connect(reverseFrames)
-ui.splitBtn.pressed.connect(splitFrames)
+ui.exportBtn.pressed.connect(exportFrames)
 ui.copy.pressed.connect(duplicateFrame)
 ui.deleteBtn.pressed.connect(deleteFrame)
 ui.playPause.pressed.connect(playPause)

@@ -303,7 +303,7 @@ def splitFrames():
     frames = ui.frameList.selectedIndexes()
     frames.sort(key=lambda frame: frame.row())
 
-    f = QFileDialog.getSaveFileName(window, "Split animation", animDir, "libsuperderpy animation (*.ini)")
+    f = QFileDialog.getSaveFileName(window, "Export selected frames", animDir, "libsuperderpy animation (*.ini)")
     f = f[0]
 
     config = ConfigParser()

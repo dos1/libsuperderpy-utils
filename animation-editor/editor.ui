@@ -110,6 +110,36 @@
              </widget>
             </item>
             <item>
+             <widget class="QToolButton" name="importBtn">
+              <property name="toolTip">
+               <string>Import</string>
+              </property>
+              <property name="text">
+               <string>Import</string>
+              </property>
+              <property name="icon">
+               <iconset theme="document-import">
+                <normaloff>.</normaloff>.</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="splitBtn">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="toolTip">
+               <string>Export</string>
+              </property>
+              <property name="text">
+               <string>Export</string>
+              </property>
+              <property name="icon">
+               <iconset theme="document-export"/>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="horizontalSpacer">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -124,6 +154,9 @@
             </item>
             <item>
              <widget class="QToolButton" name="copy">
+              <property name="toolTip">
+               <string>Copy</string>
+              </property>
               <property name="text">
                <string>Copy</string>
               </property>
@@ -135,8 +168,11 @@
             </item>
             <item>
              <widget class="QToolButton" name="moveLeft">
+              <property name="toolTip">
+               <string>Move left</string>
+              </property>
               <property name="text">
-               <string>Left</string>
+               <string>Move left</string>
               </property>
               <property name="icon">
                <iconset theme="arrow-left">
@@ -149,8 +185,11 @@
             </item>
             <item>
              <widget class="QToolButton" name="moveRight">
+              <property name="toolTip">
+               <string>Move right</string>
+              </property>
               <property name="text">
-               <string>Right</string>
+               <string>Move right</string>
               </property>
               <property name="icon">
                <iconset theme="arrow-right">
@@ -163,6 +202,9 @@
             </item>
             <item>
              <widget class="QToolButton" name="reverseBtn">
+              <property name="toolTip">
+               <string>Reverse</string>
+              </property>
               <property name="text">
                <string>Reverse</string>
               </property>
@@ -173,32 +215,10 @@
              </widget>
             </item>
             <item>
-             <widget class="QToolButton" name="splitBtn">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="text">
-               <string>Split</string>
-              </property>
-              <property name="icon">
-               <iconset theme="split">
-                <normaloff>.</normaloff>.</iconset>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="importBtn">
-              <property name="text">
-               <string>Import</string>
-              </property>
-              <property name="icon">
-               <iconset theme="document-import">
-                <normaloff>.</normaloff>.</iconset>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QToolButton" name="deleteBtn">
+              <property name="toolTip">
+               <string>Delete</string>
+              </property>
               <property name="text">
                <string>Delete</string>
               </property>
@@ -345,6 +365,9 @@
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QToolButton" name="playPause">
+          <property name="toolTip">
+           <string>Play</string>
+          </property>
           <property name="text">
            <string>Play</string>
           </property>
@@ -356,6 +379,9 @@
         </item>
         <item>
          <widget class="QToolButton" name="goLeft">
+          <property name="toolTip">
+           <string>-1</string>
+          </property>
           <property name="text">
            <string>-1</string>
           </property>
@@ -367,6 +393,9 @@
         </item>
         <item>
          <widget class="QToolButton" name="goRight">
+          <property name="toolTip">
+           <string>+1</string>
+          </property>
           <property name="text">
            <string>+1</string>
           </property>
@@ -378,6 +407,9 @@
         </item>
         <item>
          <widget class="QToolButton" name="stop">
+          <property name="toolTip">
+           <string>Stop</string>
+          </property>
           <property name="text">
            <string>Stop</string>
           </property>
@@ -407,6 +439,9 @@
     <layout class="QVBoxLayout" name="verticalLayout_5">
      <item>
       <widget class="QComboBox" name="subdirs">
+       <property name="toolTip">
+        <string>Directory</string>
+       </property>
        <property name="frame">
         <bool>true</bool>
        </property>
@@ -457,6 +492,9 @@
          <property name="focusPolicy">
           <enum>Qt::StrongFocus</enum>
          </property>
+         <property name="toolTip">
+          <string>Add frame</string>
+         </property>
          <property name="text">
           <string>Add frame</string>
          </property>
@@ -490,6 +528,9 @@
        </item>
        <item>
         <widget class="QToolButton" name="addAll">
+         <property name="toolTip">
+          <string>Add all</string>
+         </property>
          <property name="text">
           <string>Add all</string>
          </property>
@@ -501,12 +542,14 @@
        </item>
        <item>
         <widget class="QToolButton" name="sort">
+         <property name="toolTip">
+          <string>Sort</string>
+         </property>
          <property name="text">
           <string>Sort</string>
          </property>
          <property name="icon">
-          <iconset theme="reverse">
-           <normaloff>.</normaloff>.</iconset>
+          <iconset theme="sort-name"/>
          </property>
         </widget>
        </item>

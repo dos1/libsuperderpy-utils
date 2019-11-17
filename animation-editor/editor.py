@@ -494,7 +494,7 @@ def readDir(override=None):
     dialog.hide()
 
 def openFile(filename = None):
-    global animFile, animDir
+    global animFile, animDir, clipboard
     if not filename:
         animFile = QFileDialog.getOpenFileName(window, "Select an animation to open...", animDir if animDir else QDir.currentPath(), "libsuperderpy animation (*.ini)")
         animFile = animFile[0]
@@ -541,7 +541,7 @@ def openFile(filename = None):
     state.clearState()
     state.pushState(getState())
     state.markAsStored()
-
+    clipboard = []
 
 def importFrames():
     state.pushState(getState()) # update selection
@@ -580,7 +580,7 @@ def importFrames():
     state.pushState(getState())
 
 def newFile(directory=None):
-    global animDir, animFile
+    global animDir, animFile, clipboard
     animDir = directory
 
     if not animDir:
@@ -598,7 +598,7 @@ def newFile(directory=None):
     animFile = None
     ui.counter.setText('-/-')
     state.clearState()
-
+    clipboard = []
 
 def newOrOpen():
     val = QMessageBox.question(window, "libsuperderpy animation editor", "Do you want to open an existing animation?")

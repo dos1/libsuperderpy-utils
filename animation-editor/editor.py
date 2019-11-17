@@ -417,6 +417,20 @@ def modify():
 
 timer.timeout.connect(nextFrame)
 
+def askSave():
+    if window.isWindowModified():
+        val = QMessageBox.warning(window, animFile, "The animation has been changed. Do you want to save it?", QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+        if val == QMessageBox.Yes:
+            saveFile()
+            return True
+        elif val == QMessageBox.No:
+            return True
+        else:
+            return False
+    else:
+        return True
+
+
 class MainWindow(QMainWindow):
 
     def dragEnterEvent(self, event):
@@ -432,17 +446,10 @@ class MainWindow(QMainWindow):
                 openFile(url)
 
     def closeEvent(self, event):
-        if self.isWindowModified():
-            val = QMessageBox.warning(self, animFile, "The animation has been changed. Do you want to save it?", QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-            if val == QMessageBox.Yes:
-                saveFile()
-                event.accept()
-            elif val == QMessageBox.No:
-                event.accept()
-            else:
-                event.ignore()
-        else:
+        if askSave():
             event.accept()
+        else:
+            event.ignore()
 
 window = MainWindow()
 ui = Ui_MainWindow()
@@ -495,6 +502,8 @@ def readDir(override=None):
 
 def openFile(filename = None):
     global animFile, animDir, clipboard
+    if not askSave():
+        return
     if not filename:
         animFile = QFileDialog.getOpenFileName(window, "Select an animation to open...", animDir if animDir else QDir.currentPath(), "libsuperderpy animation (*.ini)")
         animFile = animFile[0]
@@ -581,6 +590,8 @@ def importFrames():
 
 def newFile(directory=None):
     global animDir, animFile, clipboard
+    if not askSave():
+        return
     animDir = directory
 
     if not animDir:

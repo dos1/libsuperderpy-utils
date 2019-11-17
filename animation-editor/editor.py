@@ -146,6 +146,7 @@ def stateChanged(modified):
     window.setWindowModified(not modified)
 
 state = StateManager(compareState, stateChanged)
+clipboard = []
 
 def applyState(state):
     if state:
@@ -164,6 +165,33 @@ def undoState():
 def redoState():
     newState = state.redoState()
     applyState(newState)
+
+def copyFrames():
+    global clipboard
+    frames = ui.frameList.selectedIndexes()
+    frames.sort(key=lambda frame: frame.row())
+    clipboard = []
+    for frame in frames:
+        clipboard.append(QStandardItem(frameModel.item(frame.row())))
+
+def cutFrames():
+    copyFrames()
+    deleteFrame()
+
+def pasteFrames():
+    state.pushState(getState()) # update selection
+    ui.frameList.clearSelection()
+    frames = [QStandardItem(item) for item in clipboard]
+    i = 1
+    for frame in frames:
+        if ui.frameList.currentIndex().model():
+            frameModel.insertRow(ui.frameList.currentIndex().row() + i, frame)
+        else:
+            frameModel.appendRow(frame)
+        i += 1
+    for frame in frames:
+        ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
+    state.pushState(getState())
 
 def addFrame():
     state.pushState(getState()) # update selection
@@ -666,6 +694,9 @@ ui.actionSave_as.triggered.connect(saveFileAs)
 ui.actionClose.triggered.connect(lambda: app.quit())
 ui.actionUndo.triggered.connect(undoState)
 ui.actionRedo.triggered.connect(redoState)
+ui.actionCut.triggered.connect(cutFrames)
+ui.actionCopy.triggered.connect(copyFrames)
+ui.actionPaste.triggered.connect(pasteFrames)
 ui.subdirs.currentTextChanged.connect(readDir)
 
 ui.sourcesList.itemSelected.connect(addFrame)

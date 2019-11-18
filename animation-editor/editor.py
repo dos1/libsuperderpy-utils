@@ -16,6 +16,17 @@ app.setApplicationDisplayName("libsuperderpy animation editor")
 
 order=Qt.DescendingOrder
 
+class AnimationFrameData:
+    pixmap = None
+    duration = -1
+
+    def __init__(self, pixmap, duration = -1):
+        self.pixmap = pixmap
+        self.duration = duration
+
+    def setDuration(self, duration):
+        return AnimationFrameData(self.pixmap, duration)
+
 class StateManager:
     state = None
     history = None
@@ -118,12 +129,18 @@ def sort():
 
 class State(list):
     selection = None
+    current = None
+    duration = None
+    reversible = None
 
 def getState():
     items = State()
     for i in range(frameModel.rowCount()):
         items.append(QStandardItem(frameModel.item(i)))
     items.selection = [index.row() for index in ui.frameList.selectedIndexes()]
+    items.duration = ui.duration.value()
+    items.reversible = ui.reversible.isChecked()
+    items.current = ui.frameList.currentIndex().row()
     return items
 
 def compareState(a, b):
@@ -133,6 +150,12 @@ def compareState(a, b):
     if not a or not b:
         return False
 
+    if a.duration != b.duration:
+        return False
+
+    if a.reversible != b.reversible:
+        return False
+
     if len(a) != len(b):
         return False
 
@@ -140,9 +163,12 @@ def compareState(a, b):
         if a[i].toolTip() != b[i].toolTip():
             return False
 
+        if a[i].data().duration != b[i].data().duration:
+            return False
+
     return True
 
-def stateChanged(modified):
+def stateChanged(modified=True):
     window.setWindowModified(not modified)
 
 state = StateManager(compareState, stateChanged)
@@ -150,13 +176,22 @@ clipboard = []
 
 def applyState(state):
     if state:
+        current = ui.frameList.currentIndex()
         frameModel.clear()
         for item in state:
-            frameModel.appendRow(QStandardItem(item))
+            frame = QStandardItem(item)
+            frameModel.appendRow(frame)
+
+        ui.duration.setValue(state.duration)
+        ui.reversible.setChecked(state.reversible)
+        if state.current >= 0:
+            ui.frameList.setCurrentIndex(frameModel.item(state.current).index())
 
         ui.frameList.clearSelection()
         for i in state.selection:
-            ui.frameList.selectionModel().select(frameModel.item(i).index(), QItemSelectionModel.Select)
+            ui.frameList.selectionModel().select(item.index(), QItemSelectionModel.Select)
+
+        ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
 
 def undoState():
     newState = state.undoState()
@@ -344,6 +379,16 @@ playing = False
 reversing = False
 timer = QTimer()
 
+def setFrameDuration(value):
+    frame = ui.frameList.currentIndex()
+    item = frameModel.item(frame.row())
+    if item:
+        item.setData(item.data().setDuration(value))
+        timer.setInterval(value if value >= 0 else ui.duration.value())
+        font = QFont()
+        font.setBold(value >= 0)
+        item.setFont(font)
+
 def nextFrame():
     global reversing
     if playing and reversing:
@@ -358,6 +403,8 @@ def nextFrame():
         if not item:
             return
     ui.frameList.setCurrentIndex(item.index())
+    data = item.data()
+    timer.setInterval(data.duration if data.duration >= 0 else ui.duration.value())
 
 def prevFrame():
     global reversing
@@ -388,18 +435,25 @@ def playPause():
     ui.playPause.setIcon(QIcon.fromTheme("media-playback-pause" if playing else "media-playback-start"))
     ui.playPause.setText("Pause" if playing else "Play")
 
-    timer.setInterval(ui.duration.value())
     if playing:
         timer.start()
     else:
         timer.stop()
 
-def showFrame(current, previous):
+def showFrame(current, previous=None):
     if not current.model():
         preview.setVisible(False)
+        ui.frameDuration.setEnabled(False)
         return
     preview.setVisible(True)
-    pixmap = current.model().itemFromIndex(current).data()
+    ui.frameDuration.setEnabled(True)
+
+    item = current.model().itemFromIndex(current)
+    data = item.data()
+    timer.setInterval(data.duration if data.duration >= 0 else ui.duration.value())
+    ui.frameDuration.setValue(data.duration)
+
+    pixmap = data.pixmap
     preview.setPixmap(pixmap)
     previewScene.setSceneRect(QRectF(pixmap.rect()))
     ui.preview.fitInView(previewScene.sceneRect(), mode=Qt.KeepAspectRatio)
@@ -413,7 +467,7 @@ def stop():
         ui.frameList.setCurrentIndex(item.index())
 
 def modify():
-    window.setWindowModified(True)
+    state.pushState(getState())
 
 timer.timeout.connect(nextFrame)
 
@@ -490,7 +544,7 @@ def readDir(override=None):
         pixmap = cache.load(join(p, frame))
         item.setIcon(QIcon(pixmap))
         item.setToolTip(relpath(join(p,frame), animDir))
-        item.setData(pixmap)
+        item.setData(AnimationFrameData(pixmap))
         item.setDropEnabled(False)
 
         model.appendRow(item)
@@ -532,14 +586,18 @@ def openFile(filename = None):
     for i in range(frames):
         section = 'frame' + str(i)
         frame = config.get(section, 'file')
+        duration = int(config.get(section, 'duration', fallback=-1))
         print("Loading {}...".format(frame))
         dialog.setValue(i)
         item = QStandardItem(basename(frame))
         pixmap = cache.load(join(animDir, frame))
         item.setIcon(QIcon(pixmap))
         item.setToolTip(frame)
-        item.setData(pixmap)
+        item.setData(AnimationFrameData(pixmap, duration=duration))
         item.setDropEnabled(False)
+        font = QFont()
+        font.setBold(duration >= 0)
+        item.setFont(font)
         frameModel.appendRow(item)
         app.processEvents()
     dialog.hide()
@@ -579,7 +637,7 @@ def importFrames():
         pixmap = cache.load(join(join(animDir, path), frame))
         item.setIcon(QIcon(pixmap))
         item.setToolTip(relpath(join(path, frame), animDir))
-        item.setData(pixmap)
+        item.setData(AnimationFrameData(pixmap))
         item.setDropEnabled(False)
         frameModel.appendRow(item)
         app.processEvents()
@@ -640,6 +698,9 @@ def saveFile():
         section = 'frame' + str(i)
         config.add_section(section)
         config.set(section, 'file', frameModel.item(i).toolTip())
+        duration = frameModel.item(i).data().duration
+        if duration > -1:
+            config.set(section, 'duration', str(duration))
 
     with open(animFile, 'w') as configfile:
         config.write(configfile)
@@ -700,6 +761,8 @@ ui.reversible.stateChanged.connect(unreverse)
 ui.reversible.stateChanged.connect(modify)
 ui.duration.valueChanged.connect(lambda val: timer.setInterval(val))
 ui.duration.valueChanged.connect(modify)
+ui.frameDuration.valueChanged.connect(setFrameDuration)
+ui.frameDuration.valueChanged.connect(modify)
 ui.actionNew.triggered.connect(newFile)
 ui.actionOpen.triggered.connect(openFile)
 ui.actionSave.triggered.connect(saveFile)

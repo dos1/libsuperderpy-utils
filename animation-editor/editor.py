@@ -620,7 +620,7 @@ def newOrOpen():
 
 def saveFileAs():
     global animFile
-    f = QFileDialog.getSaveFileName(window, "Save animation", animDir, "libsuperderpy animation (*.ini)")
+    f = QFileDialog.getSaveFileName(window, "Save animation", animFile if animFile else animDir, "libsuperderpy animation (*.ini)")
     f = f[0]
     if f!="":
         animFile = f

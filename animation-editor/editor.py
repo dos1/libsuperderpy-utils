@@ -781,8 +781,6 @@ ui.frameList.itemRemoved.connect(deleteFrame)
 frameModel.itemChanged.connect(lambda item: QTimer.singleShot(50, lambda: ui.frameList.setCurrentIndex(item.index())))
 frameModel.itemChanged.connect(modify)
 
-ui.frameList.setDragDropMode(QAbstractItemView.InternalMove)
-ui.sourcesList.setDragDropMode(QAbstractItemView.DragOnly)
 ui.sourcesList.setModel(model)
 ui.frameList.setModel(frameModel)
 

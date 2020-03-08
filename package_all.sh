@@ -1,15 +1,9 @@
 #!/bin/bash
 set -e
 
-if [ "$(grep SDL ../flatpak/*.json)" ]; then
-  FLATPAK_SDL=1
-fi
-
 ./package_maemo5.sh
 ./package_linux_flatpak_arm64.sh
-[ "$FLATPAK_SDL" ] && ./package_linux_flatpak_armv7.sh
 ./package_linux_flatpak_amd64.sh
-[ "$FLATPAK_SDL" ] && ./package_linux_flatpak_i686.sh
 ./package_linux_amd64.sh
 ./package_linux_i686.sh
 ./package_win64.sh

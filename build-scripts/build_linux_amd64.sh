@@ -32,7 +32,7 @@ cd "$GAMENAME_PRETTY"
 cp ../../src/$GAMENAME ../../src/*.so ../../src/gamestates/*.so ./
 cp -r ../../../../src ./
 cp -r ../../../../libsuperderpy ./
-rm -rf libsuperderpy/.git
+rm -rf libsuperderpy/.git libsuperderpy/src/3rdparty
 if [ -d "../../../../cmake" ]; then
   cp -r ../../../../cmake ./
 fi

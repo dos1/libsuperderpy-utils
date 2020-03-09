@@ -13,7 +13,7 @@ mkdir build-pocketchip
 
 cd build-pocketchip
 
-cmake -GNinja ../.. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=/toolchain/pocketchip.toolchain
+cmake -GNinja ../.. -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=/toolchain/pocketchip.toolchain
 ninja
 
 GAMENAME=`grep LIBSUPERDERPY_GAMENAME:INTERNAL CMakeCache.txt`
@@ -30,16 +30,6 @@ mkdir "$GAMENAME_PRETTY"
 cd "$GAMENAME_PRETTY"
 
 cp ../../src/$GAMENAME ../../src/*.so ../../src/gamestates/*.so ./
-cp -r ../../../../src ./
-cp -r ../../../../libsuperderpy ./
-rm -rf libsuperderpy/.git
-if [ -d "../../../../cmake" ]; then
-  cp -r ../../../../cmake ./
-fi
-cp -r ../../../../CMakeLists.txt ./
-if [ -f "../../../../README" ]; then
-  cp -r ../../../../README ./
-fi
 cp -r ../../../../COPYING ./
 cp -r ../../../../data ./
 rm -rf data/.git

@@ -26,7 +26,7 @@ cd output/$GAMENAME
 sed -i -e 's/$legalf32//g' $GAMENAME.js # https://github.com/kripken/emscripten/issues/5436
 mv $GAMENAME.html index.html
 rm -rf gamestates
-zip -9r $GAMENAME-wasm.zip *
+zip -0r $GAMENAME-wasm.zip *
 mv $GAMENAME-wasm.zip ../../../output/
 
 popd

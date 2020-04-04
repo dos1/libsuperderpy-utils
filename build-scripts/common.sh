@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ "`which podman`" ]; then
+if [ "`which podman 2> /dev/null`" ]; then
   DOCKER="podman"
   PRIV_DOCKER="sudo podman"
   PRIV_ARGS="--privileged"

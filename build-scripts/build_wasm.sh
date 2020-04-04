@@ -11,7 +11,9 @@ mkdir build-wasm
 
 cd build-wasm
 
-emcmake cmake ../.. -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSROOT=$EMSCRIPTEN/system/local -DCMAKE_PREFIX_PATH=$EMSCRIPTEN/system/local -DALLEGRO5_LIBRARY=$EMSCRIPTEN/system/local/lib/allegro5.so -DCMAKE_INSTALL_PREFIX=output -DLIBSUPERDERPY_EMSCRIPTEN_MODE=wasm -G Ninja
+SRC_DIR=`realpath ../../`
+
+emcmake cmake "$SRC_DIR" -DCMAKE_BUILD_TYPE=Release -DCMAKE_SYSROOT=$EMSCRIPTEN/system/local -DCMAKE_PREFIX_PATH=$EMSCRIPTEN/system/local -DALLEGRO5_LIBRARY=$EMSCRIPTEN/system/local/lib/allegro5.so -DCMAKE_INSTALL_PREFIX=output -DLIBSUPERDERPY_EMSCRIPTEN_MODE=wasm -G Ninja
 
 GAMENAME=`grep LIBSUPERDERPY_GAMENAME:INTERNAL CMakeCache.txt`
 GAMENAME=${GAMENAME#LIBSUPERDERPY_GAMENAME:INTERNAL=}
@@ -27,6 +29,10 @@ sed -i -e 's/$legalf32//g' $GAMENAME.js # https://github.com/kripken/emscripten/
 mv $GAMENAME.html index.html
 rm -rf gamestates
 rm $GAMENAME.js.orig.js
+if [ -d "$SRC_DIR/html" ]; then
+  cp -r "$SRC_DIR"/html/* ./
+fi
+
 zip -0r $GAMENAME-wasm.zip *
 mv $GAMENAME-wasm.zip ../../../output/
 

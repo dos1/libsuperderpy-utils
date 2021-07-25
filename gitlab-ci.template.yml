@@ -139,6 +139,12 @@ build:maemo5:
     - cd utils
     - ./package_maemo5.sh
 
+build:vita:
+  extends: .build
+  script:
+    - cd utils
+    - ./package_vita.sh
+
 .butler-deploy:
   stage: deploy
   image: dosowisko/butler
@@ -332,6 +338,17 @@ deploy:itch:maemo5:
   variables:
     DEPLOY_FILENAME_SUFFIX: -maemo5.tar.gz
     DEPLOY_TARGET: ci-maemo5
+
+deploy:itch:vita:
+  extends: .butler-deploy
+  environment:
+    name: itch-vita
+  dependencies:
+    - meta
+    - build:vita
+  variables:
+    DEPLOY_FILENAME_SUFFIX: -vita.vpk
+    DEPLOY_TARGET: ci-vita
 
 deploy:playstore:
   stage: deploy

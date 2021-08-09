@@ -153,6 +153,7 @@ build:vita:
   only:
     refs:
       - master
+      - main
     variables:
       - $BUTLER_TARGET
   environment:
@@ -358,6 +359,7 @@ deploy:playstore:
   only:
     refs:
       - master
+      - main
     variables:
       - $PLAY_STORE_DEPLOY
   dependencies:
@@ -379,6 +381,7 @@ deploy:playstore:
   only:
     refs:
       - master
+      - main
     variables:
       - $FDROID_DEPLOY
   environment:

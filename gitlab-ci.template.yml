@@ -367,7 +367,7 @@ deploy:playstore:
     - build:android-armv7
     - build:android-arm64
   environment:
-    name: playstore-$CI_JOB_NAME
+    name: playstore
   variables:
     GIT_STRATEGY: none
   script:

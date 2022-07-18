@@ -32,7 +32,7 @@ cd "$GAMENAME_PRETTY"
 
 cp ../../src/*.exe ../../src/*.dll ../../src/gamestates/*.dll ../../../libs/win32/* ./
 cp -r ../../../../data ./
-cp -r ../../../../COPYING ./
+cp -r ../../../../COPYING* ./
 rm -rf data/.git
 rm -rf data/stuff
 rm data/CMakeLists.txt

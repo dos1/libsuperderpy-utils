@@ -30,7 +30,7 @@ mkdir "$GAMENAME_PRETTY"
 cd "$GAMENAME_PRETTY"
 
 cp ../../src/$GAMENAME ../../src/*.so ../../src/gamestates/*.so ./
-cp -r ../../../../COPYING ./
+cp -r ../../../../COPYING* ./
 cp -r ../../../../data ./
 rm -rf data/.git
 rm -rf data/stuff

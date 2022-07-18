@@ -34,7 +34,7 @@ cp ../../src/$GAMENAME ../../src/*.so ../../src/gamestates/*.so ./
 if [ -f "../../../../README" ]; then
   cp -r ../../../../README ./
 fi
-cp -r ../../../../COPYING ./
+cp -r ../../../../COPYING* ./
 cp -r ../../../../data ./
 rm -rf data/.git
 rm -rf data/stuff

@@ -774,6 +774,7 @@ ui.actionCut.triggered.connect(cutFrames)
 ui.actionCopy.triggered.connect(copyFrames)
 ui.actionPaste.triggered.connect(pasteFrames)
 ui.subdirs.currentTextChanged.connect(readDir)
+ui.refreshSources.pressed.connect(readDir)
 
 ui.sourcesList.itemSelected.connect(addFrame)
 ui.frameList.itemRemoved.connect(deleteFrame)

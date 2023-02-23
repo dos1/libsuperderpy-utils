@@ -219,6 +219,19 @@
              </widget>
             </item>
             <item>
+             <widget class="QSpinBox" name="moveNumber">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>999</number>
+              </property>
+              <property name="stepType">
+               <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QToolButton" name="moveRight">
               <property name="toolTip">
                <string>Move right</string>

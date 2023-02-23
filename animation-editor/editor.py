@@ -265,7 +265,7 @@ def moveFrameLeft():
     for frame in frames:
         if not frame.model():
             continue
-        newRow = frame.row() - 1
+        newRow = frame.row() - ui.moveNumber.value()
         if newRow < 0:
             continue
         rows = frameModel.takeRow(frame.row())
@@ -286,7 +286,7 @@ def moveFrameRight():
     for frame in frames:
         if not frame.model():
             continue
-        newRow = frame.row() + 1
+        newRow = frame.row() + ui.moveNumber.value()
         if newRow >= frameModel.rowCount():
             continue
         rows = frameModel.takeRow(frame.row())

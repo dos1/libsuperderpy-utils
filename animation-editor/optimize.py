@@ -3,18 +3,9 @@
 from PIL import Image
 from configparser import ConfigParser
 import sys
+from crop import cropImage
 
 frameCache = {}
-
-def cropImage(filename):
-    image = Image.open(filename)
-    imageBox = image.convert("RGBa").getbbox()
-    w, h = image.width, image.height
-    if not imageBox:
-        imageBox = (0, 0, 1, 1, w, h)
-    image.crop(imageBox).save(filename, lossless=True)
-    frameCache[filename] = (imageBox[0], imageBox[1], imageBox[2], imageBox[3], w, h)
-    return frameCache[filename]
 
 def cropFrame(config, id):
     print("Cropping frame", id)

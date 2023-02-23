@@ -14,7 +14,7 @@ from EditorUI import Ui_MainWindow
 app = QApplication(sys.argv)
 app.setApplicationDisplayName("libsuperderpy animation editor")
 
-order=Qt.DescendingOrder
+order=Qt.AscendingOrder
 
 class AnimationFrameData:
     pixmap = None
@@ -551,7 +551,7 @@ def readDir(override=None):
         app.processEvents()
         i = i+1
 
-    sort()
+    model.sort(0, order=order)
     dialog.hide()
 
 def openFile(filename = None):

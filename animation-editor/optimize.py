@@ -30,6 +30,7 @@ def cropFrame(config, id):
             return frameCache[frame]
         else:
             box = cropImage(frame)
+            frameCache[filename] = box
             print("  ", frame, box[0], box[1])
             config.set(section, 'x', str(box[0]))
             config.set(section, 'y', str(box[1]))

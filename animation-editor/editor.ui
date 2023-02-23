@@ -288,7 +288,7 @@
      <x>0</x>
      <y>0</y>
      <width>899</width>
-     <height>29</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -376,8 +376,7 @@
            <string>-1</string>
           </property>
           <property name="icon">
-           <iconset theme="media-skip-backward">
-            <normaloff>.</normaloff>.</iconset>
+           <iconset theme="media-seek-backward"/>
           </property>
          </widget>
         </item>
@@ -390,8 +389,7 @@
            <string>+1</string>
           </property>
           <property name="icon">
-           <iconset theme="media-skip-forward">
-            <normaloff>.</normaloff>.</iconset>
+           <iconset theme="media-seek-forward"/>
           </property>
          </widget>
         </item>

@@ -16,6 +16,23 @@ app.setApplicationDisplayName("libsuperderpy animation editor")
 
 order=Qt.AscendingOrder
 
+def fitInView(self, rect, flags = Qt.IgnoreAspectRatio):
+    if self.scene() is None or rect.isNull():
+        return
+    self.last_scene_roi = rect
+    unity = self.transform().mapRect(QRectF(0, 0, 1, 1))
+    self.scale(1/unity.width(), 1/unity.height())
+    viewRect = self.viewport().rect()
+    sceneRect = self.transform().mapRect(rect)
+    xratio = viewRect.width() / sceneRect.width()
+    yratio = viewRect.height() / sceneRect.height()
+    if flags == Qt.KeepAspectRatio:
+        xratio = yratio = min(xratio, yratio)
+    elif flags == Qt.KeepAspectRatioByExpanding:
+        xratio = yratio = max(xratio, yratio)
+    self.scale(xratio, yratio)
+    self.centerOn(rect.center())
+
 class AnimationFrameData:
     pixmap = None
     duration = -1
@@ -458,7 +475,7 @@ def showFrame(current = None, previous=None):
     pixmap = data.pixmap
     preview.setPixmap(pixmap)
     previewScene.setSceneRect(QRectF(pixmap.rect()))
-    ui.preview.fitInView(previewScene.sceneRect(), mode=Qt.KeepAspectRatio)
+    fitInView(ui.preview, previewScene.sceneRect(), flags=Qt.KeepAspectRatio)
 
 def stop():
     global playing

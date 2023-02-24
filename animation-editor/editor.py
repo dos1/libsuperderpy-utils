@@ -115,7 +115,7 @@ class FrameCache:
             return self.cache[path]
         pixmap = QPixmap(path)
         if pixmap.width() > 1280:
-            pixmap = pixmap.scaledToWidth(1280)
+            pixmap = pixmap.scaledToWidth(1280, mode=Qt.SmoothTransformation)
         self.cache[path] = pixmap
         return pixmap
 

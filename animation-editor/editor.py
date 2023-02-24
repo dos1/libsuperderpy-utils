@@ -440,7 +440,9 @@ def playPause():
     else:
         timer.stop()
 
-def showFrame(current, previous=None):
+def showFrame(current = None, previous=None):
+    if not current:
+        current = ui.frameList.selectionModel().currentIndex()
     if not current.model():
         preview.setVisible(False)
         ui.frameDuration.setEnabled(False)
@@ -504,6 +506,27 @@ class MainWindow(QMainWindow):
             event.accept()
         else:
             event.ignore()
+
+    def eventFilter(self, source, event):
+        if playing and source != ui.playPause and event.type() == QEvent.KeyPress:
+            if event.key() == Qt.Key_Space:
+                playPause()
+                return True
+        if source == ui.preview and event.type() == QEvent.KeyPress and ui.preview.isFullScreen():
+            if event.key() == Qt.Key_Escape:
+                unfullscreen()
+            if event.key() == Qt.Key_Space:
+                playPause()
+            if event.key() == Qt.Key_Left:
+                prevFrame()
+            if event.key() == Qt.Key_Right:
+                nextFrame()
+            if event.key() == Qt.Key_Down or event.key() == Qt.Key_Home:
+                stop()
+            return True
+        if source == ui.preview and event.type() == QEvent.Resize or event.type() == QEvent.Show or event.type() == QEvent.FocusIn:
+            showFrame()
+        return super(MainWindow, self).eventFilter(source, event)
 
 window = MainWindow()
 ui = Ui_MainWindow()
@@ -669,6 +692,20 @@ def newFile(directory=None):
     state.clearState()
     clipboard = []
 
+def unfullscreen():
+    ui.preview.showNormal()
+    ui.preview.setFrameShape(QFrame.StyledPanel)
+    ui.verticalLayout_3.insertWidget(0, ui.preview)
+    ui.preview.setCursor(Qt.ArrowCursor);
+    window.show()
+
+def fullscreen():
+    window.hide()
+    ui.preview.setParent(None)
+    ui.preview.setFrameShape(QFrame.NoFrame)
+    ui.preview.setCursor(Qt.BlankCursor);
+    ui.preview.showFullScreen()
+
 def newOrOpen():
     val = QMessageBox.question(window, "libsuperderpy animation editor", "Do you want to open an existing animation?")
     if val == QMessageBox.Yes:
@@ -722,6 +759,8 @@ parser.add_argument('-m', '--maximize', action='store_true',
                     help='start maximized')
 parser.add_argument('-p', '--play', action='store_true',
                     help='automatically start playing the animation')
+parser.add_argument('-f', '--fullscreen', action='store_true',
+                    help='play the animation fullscreen (implies --play)')
 parser.add_argument('-s', '--save', metavar='path', type=str,
                     help='pre-save the animation to the specified path')
 
@@ -738,6 +777,9 @@ previewScene = QGraphicsScene(window)
 ui.preview.setScene(previewScene)
 ui.preview.setBackgroundBrush(QBrush(QColor("grey"), Qt.Dense3Pattern))
 preview = previewScene.addPixmap(QPixmap())
+ui.preview.installEventFilter(window)
+
+window.installEventFilter(window)
 
 def unreverse():
     global reversing
@@ -775,6 +817,7 @@ ui.actionCopy.triggered.connect(copyFrames)
 ui.actionPaste.triggered.connect(pasteFrames)
 ui.subdirs.currentTextChanged.connect(readDir)
 ui.refreshSources.clicked.connect(readDir)
+ui.fullscreen.clicked.connect(fullscreen)
 
 ui.sourcesList.itemSelected.connect(addFrame)
 ui.frameList.itemRemoved.connect(deleteFrame)
@@ -799,12 +842,15 @@ if args.duration:
 if args.save:
     animFile = args.save
     saveFile()
-if args.play:
+if args.play or args.fullscreen:
     playPause()
 
 if args.maximize:
     window.showMaximized()
 else:
     window.show()
+
+if args.fullscreen:
+    fullscreen()
 
 app.exec_()

@@ -428,6 +428,16 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QToolButton" name="fullscreen">
+          <property name="text">
+           <string>Fullscreen</string>
+          </property>
+          <property name="icon">
+           <iconset theme="view-fullscreen"/>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>

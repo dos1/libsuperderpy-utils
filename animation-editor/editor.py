@@ -506,6 +506,11 @@ def askSave():
     else:
         return True
 
+def toggleLinear():
+    if ui.actionUse_linear_filtering.isChecked():
+        preview.setTransformationMode(Qt.SmoothTransformation)
+    else:
+        preview.setTransformationMode(Qt.FastTransformation)
 
 class MainWindow(QMainWindow):
 
@@ -803,6 +808,7 @@ ui.preview.setBackgroundBrush(QBrush(QColor("white")))
 previewBg = previewScene.addRect(0, 0, 1, 1, pen = QPen(Qt.NoPen), brush = QBrush(QColor("grey"), Qt.Dense4Pattern))
 previewBg.setFlag(QGraphicsItem.ItemIgnoresTransformations)
 preview = previewScene.addPixmap(QPixmap())
+preview.setTransformationMode(Qt.SmoothTransformation)
 ui.preview.installEventFilter(window)
 
 window.installEventFilter(window)
@@ -841,6 +847,7 @@ ui.actionRedo.triggered.connect(redoState)
 ui.actionCut.triggered.connect(cutFrames)
 ui.actionCopy.triggered.connect(copyFrames)
 ui.actionPaste.triggered.connect(pasteFrames)
+ui.actionUse_linear_filtering.triggered.connect(toggleLinear)
 ui.subdirs.currentTextChanged.connect(readDir)
 ui.refreshSources.clicked.connect(readDir)
 ui.fullscreen.clicked.connect(fullscreen)

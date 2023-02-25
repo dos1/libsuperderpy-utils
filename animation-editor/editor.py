@@ -717,6 +717,8 @@ def unfullscreen():
     ui.preview.setFrameShape(QFrame.StyledPanel)
     ui.verticalLayout_3.insertWidget(0, ui.preview)
     ui.preview.setCursor(Qt.ArrowCursor);
+    ui.preview.setBackgroundBrush(QBrush(QColor("white")))
+    previewBg.show()
     window.show()
 
 def fullscreen():
@@ -724,6 +726,8 @@ def fullscreen():
     ui.preview.setParent(None)
     ui.preview.setFrameShape(QFrame.NoFrame)
     ui.preview.setCursor(Qt.BlankCursor);
+    ui.preview.setBackgroundBrush(QBrush(QColor("black")))
+    previewBg.hide()
     ui.preview.showFullScreen()
 
 def newOrOpen():

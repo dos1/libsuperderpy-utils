@@ -476,6 +476,9 @@ def showFrame(current = None, previous=None):
     preview.setPixmap(pixmap)
     previewScene.setSceneRect(QRectF(pixmap.rect()))
     fitInView(ui.preview, previewScene.sceneRect(), flags=Qt.KeepAspectRatio)
+    mapped = ui.preview.mapToScene(ui.preview.rect()).boundingRect()
+    previewBg.setRect(QRectF(ui.preview.rect()))
+    previewBg.setPos(mapped.topLeft())
 
 def stop():
     global playing
@@ -792,7 +795,9 @@ else:
 
 previewScene = QGraphicsScene(window)
 ui.preview.setScene(previewScene)
-ui.preview.setBackgroundBrush(QBrush(QColor("grey"), Qt.Dense3Pattern))
+ui.preview.setBackgroundBrush(QBrush(QColor("white")))
+previewBg = previewScene.addRect(0, 0, 1, 1, pen = QPen(Qt.NoPen), brush = QBrush(QColor("grey"), Qt.Dense4Pattern))
+previewBg.setFlag(QGraphicsItem.ItemIgnoresTransformations)
 preview = previewScene.addPixmap(QPixmap())
 ui.preview.installEventFilter(window)
 

@@ -352,8 +352,11 @@
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
       <widget class="QGraphicsView" name="preview">
-       <property name="autoFillBackground">
-        <bool>false</bool>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
        <property name="interactive">
         <bool>false</bool>
@@ -434,7 +437,8 @@
            <string>Fullscreen</string>
           </property>
           <property name="icon">
-           <iconset theme="view-fullscreen"/>
+           <iconset theme="view-fullscreen">
+            <normaloff>.</normaloff>.</iconset>
           </property>
          </widget>
         </item>

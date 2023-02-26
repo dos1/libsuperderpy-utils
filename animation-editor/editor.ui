@@ -99,7 +99,7 @@
             <item>
              <widget class="QToolButton" name="importBtn">
               <property name="toolTip">
-               <string>Import</string>
+               <string>Import animation</string>
               </property>
               <property name="text">
                <string>Import</string>
@@ -122,7 +122,7 @@
                <bool>true</bool>
               </property>
               <property name="toolTip">
-               <string>Export</string>
+               <string>Export selected frames as animation</string>
               </property>
               <property name="text">
                <string>Export</string>
@@ -193,7 +193,7 @@
             <item>
              <widget class="QToolButton" name="copy">
               <property name="toolTip">
-               <string>Copy</string>
+               <string>Duplicate selected frames</string>
               </property>
               <property name="text">
                <string>Copy</string>
@@ -207,7 +207,7 @@
             <item>
              <widget class="QToolButton" name="moveLeft">
               <property name="toolTip">
-               <string>Move left</string>
+               <string>Move selected frames left</string>
               </property>
               <property name="text">
                <string>Move left</string>
@@ -240,7 +240,7 @@
             <item>
              <widget class="QToolButton" name="moveRight">
               <property name="toolTip">
-               <string>Move right</string>
+               <string>Move selected frames right</string>
               </property>
               <property name="text">
                <string>Move right</string>
@@ -257,7 +257,7 @@
             <item>
              <widget class="QToolButton" name="reverseBtn">
               <property name="toolTip">
-               <string>Reverse</string>
+               <string>Reverse selected frames</string>
               </property>
               <property name="text">
                <string>Reverse</string>
@@ -271,7 +271,7 @@
             <item>
              <widget class="QToolButton" name="deleteBtn">
               <property name="toolTip">
-               <string>Delete</string>
+               <string>Delete selected frames</string>
               </property>
               <property name="text">
                <string>Delete</string>
@@ -391,7 +391,7 @@
         <item>
          <widget class="QToolButton" name="playPause">
           <property name="toolTip">
-           <string>Play</string>
+           <string>Play/pause</string>
           </property>
           <property name="text">
            <string>Play</string>
@@ -405,7 +405,7 @@
         <item>
          <widget class="QToolButton" name="goLeft">
           <property name="toolTip">
-           <string>-1</string>
+           <string>Previous frame</string>
           </property>
           <property name="text">
            <string>-1</string>
@@ -419,7 +419,7 @@
         <item>
          <widget class="QToolButton" name="goRight">
           <property name="toolTip">
-           <string>+1</string>
+           <string>Next frame</string>
           </property>
           <property name="text">
            <string>+1</string>
@@ -446,6 +446,9 @@
         </item>
         <item>
          <widget class="QToolButton" name="fullscreen">
+          <property name="toolTip">
+           <string>Fullscreen</string>
+          </property>
           <property name="text">
            <string>Fullscreen</string>
           </property>
@@ -586,7 +589,7 @@
        <item>
         <widget class="QToolButton" name="addAll">
          <property name="toolTip">
-          <string>Add all</string>
+          <string>Add all as frames</string>
          </property>
          <property name="text">
           <string>Add all</string>

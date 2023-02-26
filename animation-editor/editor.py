@@ -106,34 +106,38 @@ class StateManager:
 
 class FrameCache:
     cache = None
+    cachedir = None
+    size = None
+    quality = None
 
-    def __init__(self):
+    def __init__(self, cachedir, size, quality = 80):
         self.cache = {}
-        self.thumbnails = {}
+        self.cachedir = cachedir
+        self.size = size
+        self.quality = quality
+        QDir().mkpath(cachedir)
 
     def load(self, img):
         path = abspath(img)
         if self.cache.get(path):
             return self.cache[path]
         file = QFile(path)
-        cachedir = QStandardPaths.writableLocation(QStandardPaths.CacheLocation)
-        QDir().mkpath(cachedir)
         if file.open(QIODevice.ReadOnly):
             fileData = file.readAll()
             hash = bytes(QCryptographicHash.hash(fileData, QCryptographicHash.Md5)).hex()
             name, ext = os.path.splitext(path)
-            cachepath = QDir(cachedir).absoluteFilePath(hash + ext)
+            cachepath = QDir(self.cachedir).absoluteFilePath(hash + ext)
             if QFileInfo(cachepath).exists():
                 pixmap = QPixmap(cachepath)
             else:
                 pixmap = QPixmap(path)
-                if pixmap.width() > 1280:
-                    pixmap = pixmap.scaledToWidth(1280, mode=Qt.SmoothTransformation)
-                    pixmap.save(cachepath, quality=80)
+                if pixmap.width() > self.size:
+                    pixmap = pixmap.scaledToWidth(self.size, mode=Qt.SmoothTransformation)
+                    pixmap.save(cachepath, quality=self.quality)
             self.cache[path] = pixmap
         return pixmap
 
-cache = FrameCache()
+cache = FrameCache(QStandardPaths.writableLocation(QStandardPaths.CacheLocation), 1280)
 
 class Progress(QDialog):
     def __init__(self, parent, title='Loading'):

@@ -226,14 +226,17 @@ def applyState(state):
 
         ui.duration.setValue(state.duration)
         ui.reversible.setChecked(state.reversible)
+
         if state.current >= 0:
             ui.frameList.setCurrentIndex(frameModel.item(state.current).index())
 
-        ui.frameList.clearSelection()
+        selection = QItemSelection()
         for i in state.selection:
-            ui.frameList.selectionModel().select(item.index(), QItemSelectionModel.Select)
+            index = frameModel.item(i).index()
+            selection.select(index, index)
+        ui.frameList.selectionModel().select(selection, QItemSelectionModel.ClearAndSelect)
 
-        ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
+        showFrame()
 
 def undoState():
     newState = state.undoState()
@@ -245,6 +248,7 @@ def redoState():
 
 def copyFrames():
     global clipboard
+    state.pushState(getState()) # update selection
     frames = ui.frameList.selectedIndexes()
     frames.sort(key=lambda frame: frame.row())
     clipboard = []
@@ -252,6 +256,7 @@ def copyFrames():
         clipboard.append(QStandardItem(frameModel.item(frame.row())))
 
 def cutFrames():
+    state.pushState(getState()) # update selection
     copyFrames()
     deleteFrame()
 
@@ -266,6 +271,7 @@ def pasteFrames():
         else:
             frameModel.appendRow(frame)
         i += 1
+    ui.frameList.selectionModel().clearSelection()
     for frame in frames:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
     state.pushState(getState())
@@ -286,6 +292,7 @@ def addFrame():
                 frameModel.appendRow(newItem)
             toselect.append(newItem)
             ui.frameList.setCurrentIndex(newItem.index())
+    ui.frameList.selectionModel().clearSelection()
     for frame in toselect:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
     state.pushState(getState())
@@ -314,6 +321,7 @@ def moveFrameLeft():
         frameModel.insertRow(newRow, rows)
         toselect.append(rows[0])
         ui.frameList.setCurrentIndex(rows[0].index())
+    ui.frameList.selectionModel().clearSelection()
     for frame in toselect:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
     state.pushState(getState())
@@ -336,6 +344,7 @@ def moveFrameRight():
         toselect.append(rows[0])
         ui.frameList.setCurrentIndex(rows[0].index())
     toselect.reverse()
+    ui.frameList.selectionModel().clearSelection()
     for frame in toselect:
         ui.frameList.selectionModel().select(frame.index(), QItemSelectionModel.Select)
     state.pushState(getState())
@@ -371,6 +380,7 @@ def reverseFrames():
         rows2 = frameModel.takeRow(row2)
         frameModel.insertRow(row2, rows)
         frameModel.insertRow(row, rows2)
+    ui.frameList.setCurrentIndex(frames[-1])
     ui.frameList.selectionModel().clearSelection()
     for frame in frames:
         ui.frameList.selectionModel().select(frame, QItemSelectionModel.Select)
@@ -413,8 +423,7 @@ def deleteFrame():
         if not frame.model():
             return
         frameModel.removeRow(frame.row())
-        ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
-    ui.frameList.selectionModel().select(ui.frameList.currentIndex(), QItemSelectionModel.Select)
+    ui.frameList.selectionModel().select(ui.frameList.currentIndex(), QItemSelectionModel.ClearAndSelect)
     state.pushState(getState())
 
 playing = False
@@ -422,14 +431,23 @@ reversing = False
 timer = QTimer()
 
 def setFrameDuration(value):
-    frame = ui.frameList.currentIndex()
-    item = frameModel.item(frame.row())
-    if item:
-        item.setData(item.data().setDuration(value))
-        timer.setInterval(value if value >= 0 else ui.duration.value())
-        font = QFont()
-        font.setBold(value >= 0)
-        item.setFont(font)
+    if ui.frameDuration.lock:
+        return
+    state.pushState(getState()) # update selection
+    frames = ui.frameList.selectedIndexes()
+    selection = QItemSelection()
+    for frame in frames:
+        item = frameModel.item(frame.row())
+        if item:
+            item.setData(item.data().withDuration(value))
+            font = QFont()
+            font.setBold(value >= 0)
+            item.setFont(font)
+            if frame == ui.frameList.currentIndex():
+                timer.setInterval(value if value >= 0 else ui.duration.value())
+        selection.select(frame, frame)
+    ui.frameList.selectionModel().select(selection, QItemSelectionModel.ClearAndSelect)
+    state.pushState(getState()) # update selection
 
 def nextFrame():
     global reversing
@@ -482,20 +500,30 @@ def playPause():
     else:
         timer.stop()
 
-def showFrame(current = None, previous=None):
-    if not current:
-        current = ui.frameList.selectionModel().currentIndex()
+def showFrame():
+    current = ui.frameList.selectionModel().currentIndex()
     if not current.model():
         preview.setVisible(False)
-        ui.frameDuration.setEnabled(False)
         return
+    selected = ui.frameList.selectedIndexes()
     preview.setVisible(True)
-    ui.frameDuration.setEnabled(True)
 
     item = current.model().itemFromIndex(current)
     data = item.data()
     timer.setInterval(data.duration if data.duration >= 0 else ui.duration.value())
-    ui.frameDuration.setValue(data.duration)
+
+    ui.frameDuration.lock = True
+    duration = data.duration
+    special = "(default)"
+    for frame in selected:
+        item = frameModel.item(frame.row())
+        if item.data().duration != duration:
+            special = "(various)"
+            duration = -1
+            break
+    ui.frameDuration.setSpecialValueText(special)
+    ui.frameDuration.setValue(duration)
+    ui.frameDuration.lock = False
 
     pixmap = data.pixmap
     preview.setPixmap(pixmap)
@@ -504,6 +532,20 @@ def showFrame(current = None, previous=None):
     mapped = ui.preview.mapToScene(ui.preview.rect()).boundingRect()
     previewBg.setRect(QRectF(ui.preview.rect()))
     previewBg.setPos(mapped.topLeft())
+
+    ui.counter.setText((("(multiple)" if len(selected) > 1 else str(current.row() + 1)) + '/' + str(current.model().rowCount())) if current.model() else '-/-')
+
+def selectionChanged():
+    enabled = len(ui.frameList.selectedIndexes()) > 0
+    ui.exportBtn.setEnabled(enabled)
+    ui.frameDuration.setEnabled(enabled)
+    ui.copy.setEnabled(enabled)
+    ui.moveLeft.setEnabled(enabled)
+    ui.moveRight.setEnabled(enabled)
+    ui.moveNumber.setEnabled(enabled)
+    ui.reverseBtn.setEnabled(enabled)
+    ui.deleteBtn.setEnabled(enabled)
+    showFrame()
 
 def stop():
     global playing
@@ -675,6 +717,7 @@ def openFile(filename = None):
         item.setFont(font)
         frameModel.appendRow(item)
         app.processEvents()
+    ui.frameList.setCurrentIndex(frameModel.item(0).index())
     dialog.hide()
     if newDir:
         readDir()
@@ -687,6 +730,8 @@ def openFile(filename = None):
     clipboard = []
 
 def importFrames():
+    # TODO: import in current cursor position and select all imported frames
+
     state.pushState(getState()) # update selection
     filename = QFileDialog.getOpenFileName(window, "Select an animation to import...", animDir, "libsuperderpy animation (*.ini)")
     filename = filename[0]
@@ -721,7 +766,6 @@ def importFrames():
     print("Import finished.")
     dialog.hide()
     window.setWindowModified(True)
-    ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
     state.pushState(getState())
 
 def newFile(directory=None):
@@ -822,13 +866,6 @@ parser.add_argument('-s', '--save', metavar='path', type=str,
 
 args = parser.parse_args()
 
-if args.path and isdir(args.path):
-    newFile(args.path)
-elif args.path:
-    openFile(args.path)
-else:
-    newOrOpen()
-
 previewScene = QGraphicsScene(window)
 ui.preview.setScene(previewScene)
 ui.preview.setBackgroundBrush(QBrush(QColor("white")))
@@ -863,7 +900,6 @@ ui.reversible.stateChanged.connect(modify)
 ui.duration.valueChanged.connect(lambda val: timer.setInterval(val))
 ui.duration.valueChanged.connect(modify)
 ui.frameDuration.valueChanged.connect(setFrameDuration)
-ui.frameDuration.valueChanged.connect(modify)
 ui.actionNew.triggered.connect(newFile)
 ui.actionOpen.triggered.connect(openFile)
 ui.actionSave.triggered.connect(saveFile)
@@ -882,18 +918,21 @@ ui.fullscreen.clicked.connect(fullscreen)
 ui.sourcesList.itemSelected.connect(addFrame)
 ui.frameList.itemRemoved.connect(deleteFrame)
 
-frameModel.itemChanged.connect(lambda item: QTimer.singleShot(50, lambda: ui.frameList.setCurrentIndex(item.index())))
-frameModel.itemChanged.connect(modify)
-
 ui.sourcesList.setModel(model)
 ui.frameList.setModel(frameModel)
 
 ui.sourcesList.dragStarted.connect(lambda: ui.frameList.setDragDropMode(QAbstractItemView.DragDrop))
 ui.frameList.dragStarted.connect(lambda: ui.frameList.setDragDropMode(QAbstractItemView.InternalMove))
 
-ui.frameList.selectionModel().currentChanged.connect(lambda current, previous: ui.counter.setText((str(current.row() + 1) + '/' + str(current.model().rowCount())) if current.model() else '-/-'))
+ui.frameList.selectionModel().selectionChanged.connect(selectionChanged)
+selectionChanged()
 
-ui.frameList.selectionModel().currentChanged.connect(showFrame)
+if args.path and isdir(args.path):
+    newFile(args.path)
+elif args.path:
+    openFile(args.path)
+else:
+    newOrOpen()
 
 if args.add:
     addAll()

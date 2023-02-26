@@ -792,13 +792,13 @@ def newFile(directory=None):
     clipboard = []
 
 def unfullscreen():
-    ui.preview.showNormal()
+    window.show()
     ui.preview.setFrameShape(QFrame.StyledPanel)
-    ui.verticalLayout_3.insertWidget(0, ui.preview)
     ui.preview.setCursor(Qt.ArrowCursor);
     ui.preview.setBackgroundBrush(QBrush(QColor("white")))
     previewBg.show()
-    window.show()
+    ui.preview.showNormal()
+    ui.verticalLayout_3.insertWidget(0, ui.preview)
 
 def fullscreen():
     window.hide()

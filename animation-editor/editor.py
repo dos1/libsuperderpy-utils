@@ -37,14 +37,21 @@ def fitInView(self, rect, flags = Qt.IgnoreAspectRatio):
 
 class AnimationFrameData:
     pixmap = None
+    filename = None
     duration = -1
 
-    def __init__(self, pixmap, duration = -1):
+    def __init__(self, pixmap, filename, duration = -1):
         self.pixmap = pixmap
+        self.filename = filename
         self.duration = duration
 
-    def setDuration(self, duration):
-        return AnimationFrameData(self.pixmap, duration)
+    def withDuration(self, duration):
+        return AnimationFrameData(self.pixmap, self.filename, duration)
+
+    def saveConfig(self, config, section):
+        config.set(section, 'file', self.filename)
+        if self.duration != -1:
+            config.set(section, 'duration', str(self.duration))
 
 class StateManager:
     state = None
@@ -195,7 +202,7 @@ def compareState(a, b):
         return False
 
     for i in range(len(a)):
-        if a[i].toolTip() != b[i].toolTip():
+        if a[i].data().filename != b[i].data().filename:
             return False
 
         if a[i].data().duration != b[i].data().duration:
@@ -390,7 +397,7 @@ def exportFrames():
             item = index.model().itemFromIndex(index)
             section = 'frame' + str(i)
             config.add_section(section)
-            config.set(section, 'file', item.toolTip())
+            item.data().saveConfig(config, section)
             i = i + 1
     config.set('animation', 'frames', str(i))
 
@@ -607,10 +614,11 @@ def readDir(override=None):
         print("Loading {}...".format(frame))
         dialog.setValue(i)
         item = QStandardItem(frame)
-        pixmap = cache.load(join(p, frame))
+        filename = join(p, frame)
+        pixmap = cache.load(filename)
         item.setIcon(QIcon(pixmap))
-        item.setToolTip(relpath(join(p,frame), animDir))
-        item.setData(AnimationFrameData(pixmap))
+        item.setData(AnimationFrameData(pixmap, relpath(filename, animDir)))
+        item.setToolTip(item.data().filename)
         item.setDropEnabled(False)
 
         model.appendRow(item)
@@ -656,10 +664,11 @@ def openFile(filename = None):
         print("Loading {}...".format(frame))
         dialog.setValue(i)
         item = QStandardItem(basename(frame))
-        pixmap = cache.load(join(animDir, frame))
+        filename = join(animDir, frame)
+        pixmap = cache.load(filename)
         item.setIcon(QIcon(pixmap))
-        item.setToolTip(frame)
-        item.setData(AnimationFrameData(pixmap, duration=duration))
+        item.setData(AnimationFrameData(pixmap, frame, duration=duration))
+        item.setToolTip(item.data().filename)
         item.setDropEnabled(False)
         font = QFont()
         font.setBold(duration >= 0)
@@ -669,6 +678,7 @@ def openFile(filename = None):
     dialog.hide()
     if newDir:
         readDir()
+    print("Finished.")
     window.setWindowFilePath(animFile)
     window.setWindowModified(False)
     state.clearState()
@@ -700,13 +710,15 @@ def importFrames():
         print("Loading {}...".format(frame))
         dialog.setValue(i)
         item = QStandardItem(basename(frame))
-        pixmap = cache.load(join(join(animDir, path), frame))
+        filename = join(join(animDir, path), frame)
+        pixmap = cache.load(filename)
         item.setIcon(QIcon(pixmap))
-        item.setToolTip(relpath(join(path, frame), animDir))
-        item.setData(AnimationFrameData(pixmap))
+        item.setData(AnimationFrameData(pixmap, relpath(join(path, frame), animDir)))
+        item.setToolTip(item.data().filename)
         item.setDropEnabled(False)
         frameModel.appendRow(item)
         app.processEvents()
+    print("Import finished.")
     dialog.hide()
     window.setWindowModified(True)
     ui.frameList.selectionModel().currentChanged.emit(ui.frameList.currentIndex(), ui.frameList.currentIndex())
@@ -781,10 +793,7 @@ def saveFile():
     for i in range(frameModel.rowCount()):
         section = 'frame' + str(i)
         config.add_section(section)
-        config.set(section, 'file', frameModel.item(i).toolTip())
-        duration = frameModel.item(i).data().duration
-        if duration > -1:
-            config.set(section, 'duration', str(duration))
+        frameModel.item(i).data().saveConfig(config, section)
 
     with open(animFile, 'w') as configfile:
         config.write(configfile)

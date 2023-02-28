@@ -799,6 +799,8 @@ def unfullscreen():
     previewBg.show()
     ui.preview.showNormal()
     ui.verticalLayout_3.insertWidget(0, ui.preview)
+    if playing:
+        playPause()
 
 def fullscreen():
     window.hide()

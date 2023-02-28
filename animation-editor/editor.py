@@ -793,12 +793,12 @@ def newFile(directory=None):
     clipboard = []
 
 def unfullscreen():
-    window.showNormal()
+    ui.preview.showNormal()
+    window.show()
     ui.preview.setFrameShape(QFrame.StyledPanel)
     ui.preview.setCursor(Qt.ArrowCursor);
     ui.preview.setBackgroundBrush(QBrush(QColor("white")))
     previewBg.show()
-    ui.preview.showNormal()
     ui.verticalLayout_3.insertWidget(0, ui.preview)
     if playing:
         playPause()

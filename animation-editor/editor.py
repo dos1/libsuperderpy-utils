@@ -792,7 +792,7 @@ def newFile(directory=None):
     clipboard = []
 
 def unfullscreen():
-    window.show()
+    window.showNormal()
     ui.preview.setFrameShape(QFrame.StyledPanel)
     ui.preview.setCursor(Qt.ArrowCursor);
     ui.preview.setBackgroundBrush(QBrush(QColor("white")))

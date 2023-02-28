@@ -424,6 +424,7 @@ def deleteFrame():
             return
         frameModel.removeRow(frame.row())
     ui.frameList.selectionModel().select(ui.frameList.currentIndex(), QItemSelectionModel.ClearAndSelect)
+    ui.frameList.scrollTo(ui.frameList.currentIndex())
     state.pushState(getState())
 
 playing = False

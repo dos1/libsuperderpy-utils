@@ -420,4 +420,4 @@ class Ui_MainWindow(object):
         self.actionPaste.setShortcut(_translate("MainWindow", "Ctrl+V"))
         self.actionUse_linear_filtering.setText(_translate("MainWindow", "Use linear filtering"))
         self.actionUse_linear_filtering.setShortcut(_translate("MainWindow", "Ctrl+L"))
-from FrameListView import FrameListView
+from editor.FrameListView import FrameListView

@@ -827,7 +827,7 @@
   <customwidget>
    <class>FrameListView</class>
    <extends>QListView</extends>
-   <header>FrameListView.h</header>
+   <header>editor/FrameListView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

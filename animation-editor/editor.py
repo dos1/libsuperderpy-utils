@@ -10,7 +10,7 @@ from PyQt5.QtCore import *
 from os import listdir, walk
 from os.path import isfile, isdir, join, relpath, abspath, basename
 from configparser import ConfigParser
-from EditorUI import Ui_MainWindow
+from editor.EditorUI import Ui_MainWindow
 
 app = QApplication(sys.argv)
 app.setApplicationName("libsuperderpy-animation-editor")

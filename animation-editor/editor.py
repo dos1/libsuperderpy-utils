@@ -919,6 +919,7 @@ ui.refreshSources.clicked.connect(readDir)
 ui.fullscreen.clicked.connect(fullscreen)
 
 ui.sourcesList.itemSelected.connect(addFrame)
+ui.frameList.itemSelected.connect(playPause)
 ui.frameList.itemRemoved.connect(deleteFrame)
 
 ui.sourcesList.setModel(model)
